@@ -2,6 +2,14 @@
 alwaysApply: true
 ---
 
+<!-- 这是注释内容，不会显示在渲染后的页面上
+git add .
+git commit -m "feat: xxx功能开发"
+git push origin master
+git push gitlink master
+
+ -->
+
 【大赛硬性约束总规则，编码全程必须遵守】
 
 1. 赛事基础合规规则
