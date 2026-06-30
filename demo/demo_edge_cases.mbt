@@ -4,7 +4,11 @@ pub fn demo_dark_bar_chart() -> String {
   let theme = @lib.Theme::new_dark()
   let colors = theme.palette
   let categories = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-  let s1 = @bar.BarSeries::new("Views", [1200.0, 900.0, 1500.0, 1800.0, 1300.0, 800.0, 600.0], colors[0])
+  let s1 = @bar.BarSeries::new(
+    "Views",
+    [1200.0, 900.0, 1500.0, 1800.0, 1300.0, 800.0, 600.0],
+    colors[0],
+  )
   let chart = @bar.BarChart::new(600.0, 380.0, categories, [s1], theme, false)
   let c2 = chart.with_title("Weekly Views (Dark Theme)")
   c2.render()
@@ -64,8 +68,16 @@ pub fn demo_dark_radar_chart() -> String {
   let theme = @lib.Theme::new_dark()
   let colors = theme.palette
   let categories = ["Price", "Quality", "Design", "Service", "Brand"]
-  let s1 = @radar.RadarSeries::new("Brand X", [85.0, 70.0, 60.0, 75.0, 80.0], colors[0])
-  let s2 = @radar.RadarSeries::new("Brand Y", [60.0, 85.0, 80.0, 65.0, 55.0], colors[1])
+  let s1 = @radar.RadarSeries::new(
+    "Brand X",
+    [85.0, 70.0, 60.0, 75.0, 80.0],
+    colors[0],
+  )
+  let s2 = @radar.RadarSeries::new(
+    "Brand Y",
+    [60.0, 85.0, 80.0, 65.0, 55.0],
+    colors[1],
+  )
   let chart = @radar.RadarChart::new(420.0, 400.0, categories, [s1, s2], theme)
   let c2 = chart.with_title("Brand Comparison (Dark Theme)")
   c2.render()
@@ -77,8 +89,8 @@ pub fn demo_large_data_bar_chart() -> String {
   let theme = @lib.Theme::new_light()
   let colors = theme.palette
   let categories = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov",
+    "Dec",
   ]
   let s1 = @bar.BarSeries::new(
     "Sales",
