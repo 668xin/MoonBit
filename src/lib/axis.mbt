@@ -366,3 +366,36 @@ pub fn AxisConfig::with_x_color(
 ) -> AxisConfig {
   { ..self, x_label_color: label_color, x_axis_color: axis_color }
 }
+
+// ==================== 测试 ====================
+
+test "calc_scale_normal" {
+  let s = calc_scale(0.0, 187.0, 5)
+  assert_eq(s.max_val >= 187.0, true)
+  assert_eq(s.step > 0.0, true)
+  assert_eq(s.tick_count > 0, true)
+}
+
+test "calc_scale_zero_max" {
+  let s = calc_scale(0.0, 0.0, 5)
+  assert_eq(s.max_val > 0.0, true)
+}
+
+test "calc_scale_negative_min" {
+  let s = calc_scale(-10.0, 50.0, 5)
+  assert_eq(s.min_val <= -10.0, true)
+}
+
+test "scale_to_y_mapping" {
+  let s = calc_scale(0.0, 100.0, 5)
+  let y = scale_to_y(50.0, s, 50.0, 350.0)
+  // 50 应在 0-100 的中间，即 plot 区中间
+  let mid = (50.0 + 350.0) / 2.0
+  assert_eq(y > mid - 10.0 && y < mid + 10.0, true)
+}
+
+test "default_axis_config" {
+  let c = default_axis_config()
+  assert_eq(c.y_show_grid, true)
+  assert_eq(c.x_show_labels, true)
+}

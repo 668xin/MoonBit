@@ -275,3 +275,45 @@ pub fn LegendConfig::with_font(
 ) -> LegendConfig {
   { ..self, font_family: family, font_size: size }
 }
+
+// ==================== 测试 ====================
+
+test "legend_item_new" {
+  let item = LegendItem::new("Series A", "#ff0000")
+  assert_eq(item.label, "Series A")
+  assert_eq(item.color, "#ff0000")
+}
+
+test "legend_config_default" {
+  let c = default_legend_config()
+  assert_eq(c.font_size, 11)
+  assert_eq(c.item_width, 120.0)
+}
+
+test "legend_config_with_top" {
+  let c = default_legend_config()
+  let c2 = c.with_top_position()
+  // 默认 position 是 Bottom，修改为 Top 后 height 计算结果应一致
+  let h = legend_occupied_height(c2)
+  assert_eq(h > 0.0, true)
+}
+
+test "legend_config_with_left" {
+  let c = default_legend_config()
+  let c2 = c.with_left_position()
+  let w = legend_occupied_width(c2)
+  assert_eq(w > 0.0, true)
+}
+
+test "legend_config_with_right" {
+  let c = default_legend_config()
+  let c2 = c.with_right_position()
+  let w = legend_occupied_width(c2)
+  assert_eq(w > 0.0, true)
+}
+
+test "legend_occupied_height_bottom" {
+  let c = default_legend_config()
+  let h = legend_occupied_height(c)
+  assert_eq(h > 0.0, true)
+}

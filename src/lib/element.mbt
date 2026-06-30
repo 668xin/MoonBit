@@ -344,3 +344,54 @@ pub fn render_svg_element(elem : SvgElement) -> String {
     GroupElement(g) => g.render()
   }
 }
+
+// ==================== 测试 ====================
+
+test "svg_rect_render" {
+  let r = SvgRect::new(10.0, 20.0, 100.0, 50.0, "red", "black", 2, 0.0, 0.0)
+  let s = r.render()
+  assert_eq(s.has_prefix("<rect"), true)
+  assert_eq(s.contains("width=\"100\""), true)
+  assert_eq(s.contains("fill=\"red\""), true)
+}
+
+test "svg_circle_render" {
+  let c = SvgCircle::new(50.0, 50.0, 30.0, "blue", "none", 0)
+  let s = c.render()
+  assert_eq(s.has_prefix("<circle"), true)
+  assert_eq(s.contains("r=\"30\""), true)
+}
+
+test "svg_text_render" {
+  let t = SvgText::new(10.0, 20.0, "Hello", 14, "black", "start", "sans-serif")
+  let s = t.render()
+  assert_eq(s.has_prefix("<text"), true)
+  assert_eq(s.contains(">Hello</text>"), true)
+}
+
+test "svg_line_render" {
+  let l = SvgLine::new(0.0, 0.0, 100.0, 100.0, "#333", 1)
+  let s = l.render()
+  assert_eq(s.has_prefix("<line"), true)
+  assert_eq(s.contains("x1=\"0\""), true)
+}
+
+test "svg_group_render" {
+  let r = SvgRect::new(0.0, 0.0, 10.0, 10.0, "red", "none", 0, 0.0, 0.0)
+  let g = SvgGroup::new([RectElement(r)], "")
+  let s = g.render()
+  assert_eq(s.has_prefix("<g>"), true)
+}
+
+test "svg_group_with_transform" {
+  let r = SvgRect::new(0.0, 0.0, 10.0, 10.0, "red", "none", 0, 0.0, 0.0)
+  let g = SvgGroup::new([RectElement(r)], "rotate(45)")
+  let s = g.render()
+  assert_eq(s.contains("transform=\"rotate(45)\""), true)
+}
+
+test "render_svg_element_dispatch" {
+  let r = SvgRect::new(0.0, 0.0, 10.0, 10.0, "red", "none", 0, 0.0, 0.0)
+  let s = RectElement(r) |> render_svg_element
+  assert_eq(s.has_prefix("<rect"), true)
+}

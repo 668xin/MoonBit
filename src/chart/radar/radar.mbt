@@ -407,3 +407,37 @@ fn render_empty_radar_chart(
   let d1 = d0.add_element(@lib.SvgElement::TextElement(msg))
   d1.render()
 }
+
+// ==================== 测试 ====================
+
+test "radar_series_new" {
+  let s = RadarSeries::new("Score", [80.0, 70.0, 90.0], "#4e79a7")
+  assert_eq(s.label, "Score")
+  assert_eq(s.values.length(), 3)
+}
+
+test "radar_chart_new" {
+  let theme = @lib.Theme::new_light()
+  let cats = ["A", "B", "C", "D"]
+  let s = RadarSeries::new("S1", [50.0, 60.0, 70.0, 80.0], "#4e79a7")
+  let chart = RadarChart::new(400.0, 400.0, cats, [s], theme)
+  assert_eq(chart.radius > 0.0, true)
+  assert_eq(chart.levels, 5)
+}
+
+test "radar_chart_render" {
+  let theme = @lib.Theme::new_light()
+  let cats = ["A", "B", "C", "D"]
+  let s = RadarSeries::new("S1", [50.0, 60.0, 70.0, 80.0], "#4e79a7")
+  let chart = RadarChart::new(400.0, 400.0, cats, [s], theme)
+  let svg = chart.render()
+  assert_eq(svg.has_prefix("<?xml"), true)
+  assert_eq(svg.contains("<polygon"), true)
+}
+
+test "radar_chart_render_empty" {
+  let theme = @lib.Theme::new_light()
+  let chart = RadarChart::new(400.0, 400.0, [], [], theme)
+  let svg = chart.render()
+  assert_eq(svg.contains("No data"), true)
+}

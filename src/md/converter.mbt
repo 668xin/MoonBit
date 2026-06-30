@@ -29,3 +29,42 @@ pub fn MdConverter::convert(self : MdConverter, markdown : String) -> String {
   let blocks = parse_markdown_blocks(markdown)
   render_html_page(self.page_title, blocks)
 }
+
+// ==================== 测试 ====================
+
+test "md_converter_new" {
+  let converter = MdConverter::new()
+  assert_eq(converter.page_title, "Charts")
+}
+
+test "md_converter_with_title" {
+  let converter = MdConverter::new()
+  let c2 = converter.with_title("My Report")
+  assert_eq(c2.page_title, "My Report")
+}
+
+test "md_converter_convert_empty" {
+  let converter = MdConverter::new()
+  let html = converter.convert("")
+  assert_eq(html.has_prefix("<!DOCTYPE html>"), true)
+  assert_eq(html.contains("<h1>Charts</h1>"), true)
+}
+
+test "md_converter_convert_heading" {
+  let converter = MdConverter::new()
+  let html = converter.convert("# Hello")
+  assert_eq(html.contains("<h1>Hello</h1>"), true)
+}
+
+test "md_converter_convert_paragraph" {
+  let converter = MdConverter::new()
+  let html = converter.convert("Some text here")
+  assert_eq(html.contains("<p>Some text here</p>"), true)
+}
+
+test "md_converter_convert_chart_to_svg" {
+  let converter = MdConverter::new()
+  let md = "@chart: bar\n  title: Bar\n  categories: A, B\n  dataset: S1, blue, 10, 20\n@end"
+  let html = converter.convert(md)
+  assert_eq(html.contains("<svg"), true)
+}

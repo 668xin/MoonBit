@@ -49,3 +49,27 @@ pub fn SvgDocument::render(self : SvgDocument) -> String {
   inner +
   "</svg>"
 }
+
+// ==================== 测试 ====================
+
+test "svg_doc_new" {
+  let doc = SvgDocument::new(600, 400)
+  assert_eq(doc.width, 600)
+  assert_eq(doc.height, 400)
+  assert_eq(doc.elements.length(), 0)
+}
+
+test "svg_doc_add_element" {
+  let doc = SvgDocument::new(100, 100)
+  let r = SvgRect::new(0.0, 0.0, 50.0, 50.0, "red", "none", 0, 0.0, 0.0)
+  let d2 = doc.add_element(RectElement(r))
+  assert_eq(d2.elements.length(), 1)
+}
+
+test "svg_doc_render_empty" {
+  let doc = SvgDocument::new(100, 200)
+  let s = doc.render()
+  assert_eq(s.has_prefix("<?xml"), true)
+  assert_eq(s.contains("width=\"100\""), true)
+  assert_eq(s.contains("height=\"200\""), true)
+}

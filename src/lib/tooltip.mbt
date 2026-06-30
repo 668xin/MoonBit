@@ -107,3 +107,28 @@ pub fn render_simple_tooltip(
 ) -> SvgElement {
   render_tooltip_box(x, y, [text], config)
 }
+
+// ==================== 测试 ====================
+
+test "tooltip_config_default" {
+  let c = default_tooltip_config()
+  assert_eq(c.font_size, 11)
+  assert_eq(c.text_color, "#ffffff")
+}
+
+test "tooltip_with_title_wraps" {
+  let r = SvgRect::new(0.0, 0.0, 10.0, 10.0, "red", "none", 0, 0.0, 0.0)
+  let elem = RectElement(r)
+  let wrapped = with_tooltip(elem, "Hello")
+  // 验证返回的是 GroupElement
+  let s = wrapped |> render_svg_element
+  assert_eq(s.has_prefix("<g>"), true)
+  assert_eq(s.contains("Hello"), true)
+}
+
+test "tooltip_simple_box" {
+  let c = default_tooltip_config()
+  let box_elem = render_simple_tooltip(50.0, 50.0, "Item: 100", c)
+  let s = box_elem |> render_svg_element
+  assert_eq(s.contains("Item: 100"), true)
+}
