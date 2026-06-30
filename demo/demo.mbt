@@ -11,4 +11,12 @@ fn main {
   println(demo_line_chart())
   println("--- Multi-Line Chart ---")
   println(demo_multi_line_chart())
+  println("--- Pie Chart ---")
+  println(demo_pie_chart())
+  println("--- Simple Pie Chart ---")
+  println(demo_simple_pie_chart())
+  println("--- Radar Chart ---")
+  println(demo_radar_chart())
+  println("--- Multi Radar Chart ---")
+  println(demo_multi_radar_chart())
 }

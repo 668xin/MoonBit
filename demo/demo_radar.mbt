@@ -1,14 +1,28 @@
-/// 雷达图 Demo — 使用 SVG 元素构建雷达图
+/// 雷达图 Demo — 使用 RadarChart 组件
 pub fn demo_radar_chart() -> String {
-  let bg = @lib.SvgRect::new(0.0, 0.0, 400.0, 300.0, "#ffffff", "none", 0, 0.0, 0.0)
-  let points : Array[(Double, Double)] = [
-    (200.0, 50.0), (300.0, 150.0), (200.0, 250.0), (100.0, 150.0)
-  ]
-  let poly = @lib.SvgPolygon::new(points, "rgba(78,121,167,0.2)", "#4e79a7", 2)
-  let ring = @lib.SvgCircle::new(200.0, 150.0, 100.0, "none", "#e0e0e0", 1)
-  let d0 = @lib.SvgDocument::new(400, 300)
-  let d1 = d0.add_element(@lib.SvgElement::RectElement(bg))
-  let d2 = d1.add_element(@lib.SvgElement::PolygonElement(poly))
-  let d3 = d2.add_element(@lib.SvgElement::CircleElement(ring))
-  d3.render()
+  let theme = @lib.Theme::new_light()
+  let colors = theme.palette
+  let categories = ["Speed", "Strength", "Agility", "Endurance", "Intelligence"]
+
+  let s1 = @radar.RadarSeries::new("Player A", [90.0, 70.0, 85.0, 60.0, 75.0], colors[0])
+  let s2 = @radar.RadarSeries::new("Player B", [65.0, 95.0, 55.0, 80.0, 70.0], colors[1])
+
+  let chart = @radar.RadarChart::new(450.0, 420.0, categories, [s1, s2], theme)
+  let c2 = chart.with_title("Player Stats")
+  c2.render()
+}
+
+/// 三组数据雷达图 Demo
+pub fn demo_multi_radar_chart() -> String {
+  let theme = @lib.Theme::new_light()
+  let colors = theme.palette
+  let categories = ["Attack", "Defense", "Speed", "HP", "MP", "Luck"]
+
+  let s1 = @radar.RadarSeries::new("Warrior", [90.0, 80.0, 40.0, 95.0, 20.0, 50.0], colors[0])
+  let s2 = @radar.RadarSeries::new("Mage", [40.0, 30.0, 50.0, 50.0, 95.0, 60.0], colors[1])
+  let s3 = @radar.RadarSeries::new("Rogue", [70.0, 40.0, 95.0, 55.0, 30.0, 80.0], colors[2])
+
+  let chart = @radar.RadarChart::new(480.0, 450.0, categories, [s1, s2, s3], theme)
+  let c2 = chart.with_title("Character Attributes")
+  c2.render()
 }
