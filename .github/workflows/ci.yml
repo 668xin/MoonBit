@@ -14,6 +14,8 @@ jobs:
 
       - name: Setup MoonBit
         uses: hustcer/setup-moonbit@v1
+        with:
+          version: 0.1.20260629
 
       - name: MoonBit Version
         run: moon version --all
@@ -34,6 +36,8 @@ jobs:
 
       - name: Setup MoonBit
         uses: hustcer/setup-moonbit@v1
+        with:
+          version: 0.1.20260629
 
       - name: Moon Build
         run: moon build
@@ -45,6 +49,8 @@ jobs:
 
       - name: Setup MoonBit
         uses: hustcer/setup-moonbit@v1
+        with:
+          version: 0.1.20260629
 
       - name: Moon Test
         run: moon test
