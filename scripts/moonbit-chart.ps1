@@ -25,7 +25,7 @@ if (-not (Test-Path $CliWasm)) {
 Write-Host "Converting: $InputFile -> $OutputFile"
 try {
   $Content = Get-Content -Path $InputFile -Raw -Encoding UTF8
-  $Html = & $MoonRun $CliWasm $Content
+  $Html = & $MoonRun $CliWasm $Content *>&1
   [System.IO.File]::WriteAllText($OutputFile, $Html, [System.Text.UTF8Encoding]::new($false))
   Write-Host "Done! Generated: $OutputFile"
 } catch {

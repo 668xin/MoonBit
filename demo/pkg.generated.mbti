@@ -4,13 +4,25 @@ package "xinxin/moonbit-chart/demo"
 // Values
 pub fn demo_bar_chart() -> String
 
+pub fn demo_dark_bar_chart() -> String
+
+pub fn demo_dark_line_chart() -> String
+
+pub fn demo_dark_pie_chart() -> String
+
+pub fn demo_dark_radar_chart() -> String
+
 pub fn demo_grouped_bar_chart() -> String
+
+pub fn demo_large_data_bar_chart() -> String
 
 pub fn demo_line_chart() -> String
 
 pub fn demo_multi_line_chart() -> String
 
 pub fn demo_multi_radar_chart() -> String
+
+pub fn demo_negative_bar_chart() -> String
 
 pub fn demo_pie_chart() -> String
 
@@ -19,6 +31,8 @@ pub fn demo_radar_chart() -> String
 pub fn demo_simple_pie_chart() -> String
 
 pub fn demo_stacked_bar_chart() -> String
+
+pub fn demo_zero_value_pie_chart() -> String
 
 // Errors
 

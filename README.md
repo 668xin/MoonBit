@@ -4,24 +4,40 @@ MoonBit 原生可视化图表库，基于 SVG 渲染，支持浅色/深色双主
 
 ## 项目架构
 
-项目按四层模块化设计，职责单一，禁止跨层调用：
-
 ```
 src/
-├── lib/          # 第1层：底层绘图基座
-│   ├── render/   #   SVG 渲染基座
-│   ├── color/    #   颜色工具
-│   ├── geometry/ #   几何计算工具
-│   └── theme/    #   浅色/深色双主题
-├── chart/        # 第2层：图表组件层
-│   ├── bar/      #   柱状图
-│   ├── line/     #   折线图
-│   ├── pie/      #   饼图
-│   ├── radar/    #   雷达图
-│   ├── tooltip/  #   数据提示
-│   └── legend/   #   图例
-├── cli/          # 第3层：命令行工具
-└── md/           # 第4层：Markdown 转 HTML 转换器
+├── lib/          # 底层绘图基座
+│   ├── element   #  SVG 元素构建器（8 种：rect/circle/path/text/line/polyline/polygon/group）
+│   ├── svg       #  SVG 文档管理（宽高、元素集合、完整渲染）
+│   ├── theme     #  浅色/深色双主题（12 字段、Tableau 10 调色板）
+│   ├── color     #  颜色工具（r/g/b/a + to_css）
+│   ├── geometry  #  几何结构体（Point/Rect）
+│   ├── axis      #  坐标轴配置（刻度计算、Y轴映射）
+│   ├── legend    #  图例组件（4 种位置：bottom/top/left/right）
+│   └── tooltip   #  提示框组件
+├── chart/        # 图表组件层
+│   ├── bar       #  柱状图（单组/分组/堆叠、负值支持）
+│   ├── line      #  折线图（单组/多组、数据点标记）
+│   ├── pie       #  饼图（扇形计算、百分比标签）
+│   └── radar     #  雷达图（多边形网格、多组叠加）
+├── cli/          # 命令行工具（MD → HTML）
+└── md/           # Markdown 转换器
+    ├── md_parser     #  图表块解析
+    ├── md_renderer   #  内联渲染（粗体/斜体/代码/链接）
+    ├── chart_factory #  图表工厂
+    ├── html_renderer #  HTML 页面生成
+    ├── md_types      #  类型定义
+    └── converter     #  转换管道
+
+demo/           # 可运行 Demo（18 个示例）
+  ├── demo_bar.mbt          # 单组/分组/堆叠柱状图
+  ├── demo_line.mbt         # 单组/多组折线图
+  ├── demo_pie.mbt          # 饼图 / 简化饼图
+  ├── demo_radar.mbt        # 双组/三组雷达图
+  └── demo_edge_cases.mbt   # 暗色主题 / 负值 / 大数据 / 空数据
+
+scripts/        # 辅助脚本（PowerShell 包装）
+  └── moonbit-chart.ps1     # MD 文件 → HTML 页面
 ```
 
 ## 快速上手
@@ -32,179 +48,171 @@ src/
 
 ```bash
 # Windows (PowerShell)
-curl -fsSL https://cli.moonbitlang.com/install.ps1 | iex
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+irm https://cli.moonbitlang.com/install/powershell.ps1 | iex
 
 # macOS / Linux
-curl -fsSL https://cli.moonbitlang.com/install.sh | bash
+curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
 ```
 
-### 构建项目
+### 构建与测试
 
 ```bash
 # 克隆仓库
-git clone <repo-url>
-cd moonbit
+git clone https://github.com/668xin/moonbit-chart.git
+cd moonbit-chart
 
 # 构建所有模块
 moon build
 
-# 运行测试
+# 运行全部测试（80 个用例）
 moon test
 
 # 运行 Demo
 moon run demo
 ```
 
-### 运行命令行工具
+### 命令行工具
 
-```bash
-moon run src/cli -- input.md output.html
+将 Markdown 文件（含图表配置块）转换为完整 HTML 可视化页面：
+
+```powershell
+# PowerShell 包装脚本
+.\scripts\moonbit-chart.ps1 charts.md report.html
+
+# 或直接用 moonrun
+$content = Get-Content -Raw charts.md
+moonrun _build/wasm-gc/debug/build/src/cli/cli.wasm $content > output.html
 ```
 
-## API 文档
+## 图表配置语法
 
-### 第1层：底层绘图基座（src/lib/）
+在 Markdown 中嵌入图表，使用 `@chart:` 标记块：
 
-#### SvgDocument（SVG 渲染基座）
-
-SVG 文档的构建和渲染。
-
-```moonbit
-let doc = SvgDocument::new(800, 600)
-let doc = doc.add_element("<rect x=\"10\" y=\"10\" width=\"100\" height=\"50\" fill=\"blue\"/>")
-let svg_string = doc.render()
+```markdown
+@chart: bar
+title: Monthly Sales
+width: 600
+height: 400
+theme: light
+stacked: false
+categories: Jan, Feb, Mar, Apr, May, Jun
+dataset: Product A, #4E79A7, 120, 200, 150, 80, 230, 180
+dataset: Product B, #F28E2B, 90, 140, 200, 160, 120, 210
+@end
 ```
 
-| 方法                              | 说明                      |
-| --------------------------------- | ------------------------- |
-| `SvgDocument::new(width, height)` | 创建指定宽高的 SVG 文档   |
-| `add_element(element)`            | 添加 SVG 元素字符串       |
-| `render()`                        | 渲染为完整 SVG XML 字符串 |
+支持的图表类型：`bar`（柱状图）、`line`（折线图）、`pie`（饼图）、`radar`（雷达图）。
 
-#### Color（颜色工具）
+配置项说明：
+| 配置项 | 必选 | 说明 |
+|--------|------|------|
+| `title` | 否 | 图表标题 |
+| `width` / `height` | 否 | 画布尺寸，默认 600×400 |
+| `theme` | 否 | `light`（默认）/ `dark` |
+| `stacked` | 否 | 柱状图是否堆叠，默认 false |
+| `categories` | 是 | X轴标签，逗号分隔 |
+| `dataset` | 是 | 数据系列：`标签, 颜色, 数值...` |
 
-颜色定义和转换。
+## API 参考
+
+### 底层绘图基座
 
 ```moonbit
-let c = Color::red()
+// SVG 文档
+let doc = @lib.SvgDocument::new(800, 600)
+let doc2 = doc.add_element("<rect x=\"10\" y=\"10\" width=\"100\" height=\"50\" fill=\"#4E79A7\"/>")
+let svg_string = doc2.render()
+
+// 主题
+let light = @lib.Theme::new_light()
+let dark  = @lib.Theme::new_dark()
+let color = @lib.get_palette_color(light, 3)  // 调色板循环
+
+// 颜色
+let c = @lib.Color::red()
 let css = c.to_css()  // "rgba(255,0,0,1.0)"
+
+// 坐标轴
+let config = @lib.AxisConfig::new()
+  .with_max(300.0)
+  .with_tick_count(5)
 ```
 
-| 方法                                                          | 说明                 |
-| ------------------------------------------------------------- | -------------------- |
-| `Color::{r, g, b, a}`                                         | 创建 RGBA 颜色       |
-| `Color::red()` / `green()` / `blue()` / `black()` / `white()` | 预定义颜色           |
-| `to_css()`                                                    | 转为 CSS rgba 字符串 |
-
-#### Theme（主题系统）
-
-支持浅色/深色双主题。
+### 图表组件
 
 ```moonbit
-let light = get_light_theme()
-let dark  = get_dark_theme()
+// 柱状图
+let series = @bar.BarSeries::new("Sales", [120.0, 200.0, 150.0], colors[0])
+let chart = @bar.BarChart::new(600.0, 400.0, ["Jan", "Feb", "Mar"], [series], theme, false)
+let svg = chart.with_title("Monthly Sales").render()
+
+// 折线图
+let pts = [@line.DataPoint::new(0.0, 200.0), @line.DataPoint::new(1.0, 150.0)]
+let ds = @line.LineSeries::new("Series A", pts, colors[0])
+let chart = @line.LineChart::new(500.0, 350.0, [ds], theme)
+let svg = chart.with_title("Line Chart").render()
+
+// 饼图
+let slices = [@pie.PieSlice::new("A", 35.0, colors[0]), @pie.PieSlice::new("B", 25.0, colors[1])]
+let chart = @pie.PieChart::new(450.0, 400.0, slices, theme)
+let svg = chart.with_title("Pie Chart").render()
+
+// 雷达图
+let s1 = @radar.RadarSeries::new("Team A", [90.0, 80.0, 70.0], colors[0])
+let chart = @radar.RadarChart::new(450.0, 420.0, ["Speed", "Quality", "Cost"], [s1], theme)
+let svg = chart.with_title("Radar Chart").render()
 ```
 
-| 属性         | 说明                     |
-| ------------ | ------------------------ |
-| `mode`       | 主题模式（Light / Dark） |
-| `background` | 背景色                   |
-| `text_color` | 文字颜色                 |
-| `grid_color` | 网格线颜色               |
-| `axis_color` | 坐标轴颜色               |
+## 演示示例
 
-#### Geometry（几何工具）
-
-坐标和区域计算。
-
-```moonbit
-let p = Point::new(100, 200)
-let r = Rect::new(0, 0, 800, 600)
-```
-
-### 第2层：图表组件（src/chart/）
-
-当前为骨架阶段，各图表组件提供以下统一接口（待实现）：
-
-| 组件         | 文件             | 说明                      |
-| ------------ | ---------------- | ------------------------- |
-| `BarChart`   | `chart/bar/`     | 柱状图，支持单组/多组堆叠 |
-| `LineChart`  | `chart/line/`    | 折线图，支持单组/多组     |
-| `PieChart`   | `chart/pie/`     | 饼图                      |
-| `RadarChart` | `chart/radar/`   | 雷达图                    |
-| `Tooltip`    | `chart/tooltip/` | 数据提示                  |
-| `Legend`     | `chart/legend/`  | 图例                      |
-
-### 第3层：命令行工具（src/cli/）
-
-读取 Markdown 文件，输出包含可视化图表的完整 HTML 页面。
-
-```bash
-moon run src/cli -- <input.md> [output.html]
-```
-
-### 第4层：MD 转换工具（src/md/）
-
-解析 Markdown 中的图表标记，生成 HTML 可视化页面。
-
-## 示例
-
-项目包含 4 个 Demo 示例，覆盖柱状图、折线图、饼图、雷达图：
+运行全部 18 个 Demo：
 
 ```bash
 moon run demo
 ```
 
-运行后将依次展示各图表类型的示例输出。
+包括：单组/分组/堆叠柱状图、单组/多组折线图、饼图、雷达图，以及暗色主题、负值、大数据量、空数据等边界示例。
 
-## 输出产物
+## 两种输出产物
 
 ### SVG 字符串
 
-通过 `SvgDocument::render()` 获取符合 SVG 标准的 XML 字符串，可直接嵌入 HTML 或保存为 `.svg` 文件。
+通过各图表组件的 `.render()` 方法获取符合 SVG 标准的 XML 字符串，可直接嵌入 HTML 或保存为 `.svg` 文件。
 
 ### MD 转 HTML 可视化页面
 
-通过命令行工具将 Markdown 文件转换为完整的 HTML 页面，包含内嵌图表。
+通过命令行工具将 Markdown 文件转换为完整的 HTML 页面，所有图表以 SVG 内嵌：
+
+```powershell
+.\scripts\moonbit-chart.ps1 charts.md report.html
+```
 
 ## 发布到 mooncakes.io
 
 ```bash
-# 构建检查
-moon build
-
-# 运行测试
-moon test
-
-# 登录 mooncakes
-moon login
-
-# 发布
-moon publish
+moon build       # 构建检查
+moon test        # 运行 80 个测试
+moon login       # 登录 mooncakes.io
+moon publish     # 发布
 ```
 
 ## CI 自动化
 
-项目内置 GitHub Actions 流水线（`.github/workflows/ci.yml`），每次推送自动执行：
+GitHub Actions 流水线（`.github/workflows/ci.yml`），每次推送自动执行：
 
-- `moon build` — 编译所有模块
-- `moon test` — 运行单元测试
+- `moon check` + `moon fmt --check` + `moon info`
+- `moon build`
+- `moon test`
 
-## 开发辅助脚本
+## 边界兼容
 
-辅助脚本位于 `scripts/` 目录，使用 JS/TS/Python 编写，仅用于：
+- **空数据**：无数据时显示空白图表标题
+- **负值**：柱状图自动处理负值（反向绘制）
+- **超大数据**：坐标轴自动缩放
+- **多组堆叠**：支持多组数据堆叠柱状图
+- **暗色主题**：全部图表支持 `Theme::new_dark()`
 
-- 本地预览 SVG 效果
-- 批量生成测试数据
-- 自动生成 Demo 文档
+## 许可证
 
-核心图表渲染、MD 转 HTML 逻辑全部由 MoonBit 实现，不依赖辅助脚本运行。
-
-## 兼容性说明
-
-图表组件在设计上考虑了以下边界情况：
-
-- **空数据**：无数据时显示空白图表或友好提示
-- **超大数值**：自动缩放坐标轴
-- **负数**：坐标轴自适应包含负值区间
-- **多组堆叠**：支持多组数据堆叠显示
+MIT License — 详见 [LICENSE](LICENSE)
