@@ -1,6 +1,18 @@
-/// 图表配置数据类型
-/// 用于从 Markdown 解析出的图表配置
+/// Markdown 文档块类型与图表配置数据类型
+/// 用于从 Markdown 解析出的文档结构
 
+///|
+/// 文档块类型
+/// 表示 Markdown 文档中的一段内容（标题、段落、图表等）
+pub enum MdBlock {
+  Heading(Int, String) // level(1-6), text
+  Paragraph(String) // text content
+  Chart(ChartConfig) // @chart 图表配置块
+  HorizontalRule
+  EmptyLine
+}
+
+///|
 /// 图表类型
 pub enum ChartType {
   BarChart
@@ -9,6 +21,7 @@ pub enum ChartType {
   RadarChart
 }
 
+///|
 /// 数据集（柱状图/折线图通用）
 pub struct DataSet {
   label : String
@@ -16,10 +29,16 @@ pub struct DataSet {
   values : Array[Double]
 }
 
-pub fn DataSet::new(label : String, color : String, values : Array[Double]) -> DataSet {
+///|
+pub fn DataSet::new(
+  label : String,
+  color : String,
+  values : Array[Double],
+) -> DataSet {
   { label, color, values }
 }
 
+///|
 /// 完整图表配置
 pub struct ChartConfig {
   chart_type : ChartType
@@ -32,15 +51,21 @@ pub struct ChartConfig {
   mut stacked : Bool
 }
 
+///|
 pub fn ChartConfig::new(
   chart_type : ChartType,
   title : String,
   width : Double,
-  height : Double
+  height : Double,
 ) -> ChartConfig {
   ChartConfig::{
-    chart_type, title, width, height,
-    theme_mode: "light", categories: [],
-    datasets: [], stacked: false
+    chart_type,
+    title,
+    width,
+    height,
+    theme_mode: "light",
+    categories: [],
+    datasets: [],
+    stacked: false,
   }
 }

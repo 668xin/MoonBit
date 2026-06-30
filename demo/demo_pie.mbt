@@ -1,3 +1,4 @@
+///|
 /// 饼图 Demo — 使用 PieChart 组件
 pub fn demo_pie_chart() -> String {
   let theme = @lib.Theme::new_light()
@@ -16,6 +17,7 @@ pub fn demo_pie_chart() -> String {
   c2.render()
 }
 
+///|
 /// 简单饼图 Demo（不需要图例）
 pub fn demo_simple_pie_chart() -> String {
   let theme = @lib.Theme::new_light()

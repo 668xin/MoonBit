@@ -1,3 +1,4 @@
+///|
 /// Demo 聚合入口
 fn main {
   println("=== xinxin.moonbit-chart Demos ===")

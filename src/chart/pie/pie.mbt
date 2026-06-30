@@ -1,6 +1,7 @@
 /// 饼图组件
 /// 支持扇形区域、百分比标签、图例
 
+///|
 /// 饼图数据项
 pub struct PieSlice {
   label : String
@@ -8,11 +9,17 @@ pub struct PieSlice {
   color : String
 }
 
+///|
 /// 创建饼图数据项
-pub fn PieSlice::new(label : String, value : Double, color : String) -> PieSlice {
+pub fn PieSlice::new(
+  label : String,
+  value : Double,
+  color : String,
+) -> PieSlice {
   { label, value, color }
 }
 
+///|
 /// 饼图配置
 pub struct PieChart {
   width : Double
@@ -28,36 +35,52 @@ pub struct PieChart {
   show_legend : Bool
 }
 
+///|
 /// 创建饼图实例
 pub fn PieChart::new(
-  width : Double, height : Double,
+  width : Double,
+  height : Double,
   data : Array[PieSlice],
-  theme : @lib.Theme
+  theme : @lib.Theme,
 ) -> PieChart {
   PieChart::{
-    width, height,
-    cx: width / 2.0, cy: height / 2.0,
-    radius: if width < height { width / 2.0 - 60.0 } else { height / 2.0 - 60.0 },
-    title: "", theme, data,
-    show_labels: true, show_percent: true, show_legend: true
+    width,
+    height,
+    cx: width / 2.0,
+    cy: height / 2.0,
+    radius: if width < height {
+      width / 2.0 - 60.0
+    } else {
+      height / 2.0 - 60.0
+    },
+    title: "",
+    theme,
+    data,
+    show_labels: true,
+    show_percent: true,
+    show_legend: true,
   }
 }
 
+///|
 /// 设置标题
 pub fn PieChart::with_title(self : PieChart, title : String) -> PieChart {
   { ..self, title, cy: self.height / 2.0 - 10.0 }
 }
 
+///|
 /// 设置饼图半径
 pub fn PieChart::with_radius(self : PieChart, radius : Double) -> PieChart {
-  { ..self, radius }
+  { ..self, radius, }
 }
 
+///|
 /// 设置是否显示标签
 pub fn PieChart::with_labels(self : PieChart, show : Bool) -> PieChart {
   { ..self, show_labels: show }
 }
 
+///|
 /// 渲染为 SVG 字符串
 pub fn PieChart::render(self : PieChart) -> String {
   let n = self.data.length()
@@ -75,12 +98,29 @@ pub fn PieChart::render(self : PieChart) -> String {
   let mut elements : Array[@lib.SvgElement] = []
 
   // 背景
-  let bg = @lib.SvgRect::new(0.0, 0.0, self.width, self.height, self.theme.background, "none", 0, 0.0, 0.0)
+  let bg = @lib.SvgRect::new(
+    0.0,
+    0.0,
+    self.width,
+    self.height,
+    self.theme.background,
+    "none",
+    0,
+    0.0,
+    0.0,
+  )
   elements = elements + [@lib.SvgElement::RectElement(bg)]
 
   // 标题
   if self.title != "" {
-    let t = @lib.render_chart_title(self.title, self.width, 22.0, self.theme.title_color, 16, self.theme.font_family)
+    let t = @lib.render_chart_title(
+      self.title,
+      self.width,
+      22.0,
+      self.theme.title_color,
+      16,
+      self.theme.font_family,
+    )
     elements = elements + [t]
   }
 
@@ -106,6 +146,7 @@ pub fn PieChart::render(self : PieChart) -> String {
   doc2.render()
 }
 
+///|
 /// 计算数据项总和
 fn sum_values(data : Array[PieSlice]) -> Double {
   let mut s = 0.0
@@ -117,31 +158,57 @@ fn sum_values(data : Array[PieSlice]) -> Double {
   s
 }
 
+///|
 /// 构建 SVG 弧路径
-fn arc_path(cx : Double, cy : Double, r : Double, start_angle : Double, end_angle : Double) -> String {
+fn arc_path(
+  cx : Double,
+  cy : Double,
+  r : Double,
+  start_angle : Double,
+  end_angle : Double,
+) -> String {
   let x1 = cx + r * @math.cos(start_angle)
   let y1 = cy + r * @math.sin(start_angle)
   let x2 = cx + r * @math.cos(end_angle)
   let y2 = cy + r * @math.sin(end_angle)
   let sweep = end_angle - start_angle
   let large_flag = if sweep > @math.PI { 1 } else { 0 }
-  "M " + cx.to_string() + " " + cy.to_string() +
-    " L " + x1.to_string() + " " + y1.to_string() +
-    " A " + r.to_string() + " " + r.to_string() +
-    " 0 " + large_flag.to_string() + " 1 " +
-    x2.to_string() + " " + y2.to_string() + " Z"
+  "M " +
+  cx.to_string() +
+  " " +
+  cy.to_string() +
+  " L " +
+  x1.to_string() +
+  " " +
+  y1.to_string() +
+  " A " +
+  r.to_string() +
+  " " +
+  r.to_string() +
+  " 0 " +
+  large_flag.to_string() +
+  " 1 " +
+  x2.to_string() +
+  " " +
+  y2.to_string() +
+  " Z"
 }
 
+///|
 /// 渲染饼图扇形
 fn render_pie_slices(
-  chart : PieChart, cx : Double, cy : Double, r : Double, total : Double
+  chart : PieChart,
+  cx : Double,
+  cy : Double,
+  r : Double,
+  total : Double,
 ) -> Array[@lib.SvgElement] {
   let mut elements : Array[@lib.SvgElement] = []
-  let mut start_angle = -@math.PI / 2.0  // 从12点钟方向开始
+  let mut start_angle = -@math.PI / 2.0 // 从12点钟方向开始
   let mut i = 0
   while i < chart.data.length() {
     let slice = chart.data[i]
-    let sweep = (slice.value / total) * 2.0 * @math.PI
+    let sweep = slice.value / total * 2.0 * @math.PI
     let end_angle = start_angle + sweep
     let path_data = arc_path(cx, cy, r, start_angle, end_angle)
     let path = @lib.SvgPath::new(path_data, slice.color, "white", 1)
@@ -152,9 +219,14 @@ fn render_pie_slices(
   elements
 }
 
+///|
 /// 渲染饼图标签和百分比
 fn render_pie_labels(
-  chart : PieChart, cx : Double, cy : Double, r : Double, total : Double
+  chart : PieChart,
+  cx : Double,
+  cy : Double,
+  r : Double,
+  total : Double,
 ) -> Array[@lib.SvgElement] {
   let mut elements : Array[@lib.SvgElement] = []
   let label_r = r * 0.65
@@ -162,17 +234,33 @@ fn render_pie_labels(
   let mut i = 0
   while i < chart.data.length() {
     let slice = chart.data[i]
-    let sweep = (slice.value / total) * 2.0 * @math.PI
+    let sweep = slice.value / total * 2.0 * @math.PI
     let mid_angle = start_angle + sweep / 2.0
     let lx = cx + label_r * @math.cos(mid_angle)
     let ly = cy + label_r * @math.sin(mid_angle)
-    let pct = ((slice.value / total) * 100.0).to_int().to_string() + "%"
+    let pct = (slice.value / total * 100.0).to_int().to_string() + "%"
 
     if chart.show_labels && chart.show_percent {
-      let text = @lib.SvgText::new(lx, ly + 4.0, pct, 11, "white", "middle", chart.theme.font_family)
+      let text = @lib.SvgText::new(
+        lx,
+        ly + 4.0,
+        pct,
+        11,
+        "white",
+        "middle",
+        chart.theme.font_family,
+      )
       elements = elements + [@lib.SvgElement::TextElement(text)]
     } else if chart.show_labels {
-      let text = @lib.SvgText::new(lx, ly + 4.0, slice.label, 11, "white", "middle", chart.theme.font_family)
+      let text = @lib.SvgText::new(
+        lx,
+        ly + 4.0,
+        slice.label,
+        11,
+        "white",
+        "middle",
+        chart.theme.font_family,
+      )
       elements = elements + [@lib.SvgElement::TextElement(text)]
     }
     start_angle = start_angle + sweep
@@ -181,6 +269,7 @@ fn render_pie_labels(
   elements
 }
 
+///|
 /// 渲染饼图图例
 fn render_pie_legend(chart : PieChart) -> Array[@lib.SvgElement] {
   let mut elems : Array[@lib.SvgElement] = []
@@ -188,7 +277,7 @@ fn render_pie_legend(chart : PieChart) -> Array[@lib.SvgElement] {
   let legend_y = chart.height - 10.0
   // 纵向排列图例
   let max_cols = 4
-  let items_per_col = ((n - 1) / max_cols) + 1
+  let items_per_col = (n - 1) / max_cols + 1
   let col_width = chart.width / items_per_col.to_double()
   let mut i = 0
   while i < n {
@@ -197,8 +286,26 @@ fn render_pie_legend(chart : PieChart) -> Array[@lib.SvgElement] {
     let row = i % items_per_col
     let lx = col.to_double() * col_width + 20.0
     let ly = legend_y - row.to_double() * 18.0
-    let rect = @lib.SvgRect::new(lx, ly - 10.0, 10.0, 10.0, slice.color, "none", 0, 0.0, 0.0)
-    let text = @lib.SvgText::new(lx + 14.0, ly, slice.label, 10, chart.theme.legend_color, "start", chart.theme.font_family)
+    let rect = @lib.SvgRect::new(
+      lx,
+      ly - 10.0,
+      10.0,
+      10.0,
+      slice.color,
+      "none",
+      0,
+      0.0,
+      0.0,
+    )
+    let text = @lib.SvgText::new(
+      lx + 14.0,
+      ly,
+      slice.label,
+      10,
+      chart.theme.legend_color,
+      "start",
+      chart.theme.font_family,
+    )
     elems = elems + [@lib.SvgElement::RectElement(rect)]
     elems = elems + [@lib.SvgElement::TextElement(text)]
     i = i + 1
@@ -206,11 +313,30 @@ fn render_pie_legend(chart : PieChart) -> Array[@lib.SvgElement] {
   elems
 }
 
+///|
 /// 渲染空饼图
 fn render_empty_pie_chart(w : Double, h : Double, theme : @lib.Theme) -> String {
   let doc = @lib.SvgDocument::new(w.to_int(), h.to_int())
-  let bg = @lib.SvgRect::new(0.0, 0.0, w, h, theme.background, "none", 0, 0.0, 0.0)
-  let msg = @lib.SvgText::new(w / 2.0, h / 2.0, "No data", 14, theme.text_color, "middle", theme.font_family)
+  let bg = @lib.SvgRect::new(
+    0.0,
+    0.0,
+    w,
+    h,
+    theme.background,
+    "none",
+    0,
+    0.0,
+    0.0,
+  )
+  let msg = @lib.SvgText::new(
+    w / 2.0,
+    h / 2.0,
+    "No data",
+    14,
+    theme.text_color,
+    "middle",
+    theme.font_family,
+  )
   let d0 = doc.add_element(@lib.SvgElement::RectElement(bg))
   let d1 = d0.add_element(@lib.SvgElement::TextElement(msg))
   d1.render()

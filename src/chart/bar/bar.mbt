@@ -2,6 +2,7 @@
 /// 支持单组柱状图、多组分组柱状图、堆叠柱状图
 /// 配套坐标轴、网格线、数据标签、图例
 
+///|
 /// 柱状图系列数据
 pub struct BarSeries {
   label : String
@@ -9,11 +10,17 @@ pub struct BarSeries {
   color : String
 }
 
+///|
 /// 创建柱状图系列
-pub fn BarSeries::new(label : String, values : Array[Double], color : String) -> BarSeries {
+pub fn BarSeries::new(
+  label : String,
+  values : Array[Double],
+  color : String,
+) -> BarSeries {
   { label, values, color }
 }
 
+///|
 /// 柱状图配置
 pub struct BarChart {
   width : Double
@@ -32,42 +39,65 @@ pub struct BarChart {
   show_value_labels : Bool
 }
 
+///|
 /// 创建柱状图实例
 pub fn BarChart::new(
-  width : Double, height : Double,
+  width : Double,
+  height : Double,
   categories : Array[String],
   datasets : Array[BarSeries],
   theme : @lib.Theme,
-  stacked : Bool
+  stacked : Bool,
 ) -> BarChart {
   BarChart::{
-    width, height,
-    margin_top: 40.0, margin_bottom: 50.0,
-    margin_left: 50.0, margin_right: 20.0,
-    title: "", theme, categories, datasets,
-    stacked, show_grid: true, show_legend: true,
-    show_value_labels: false
+    width,
+    height,
+    margin_top: 40.0,
+    margin_bottom: 50.0,
+    margin_left: 50.0,
+    margin_right: 20.0,
+    title: "",
+    theme,
+    categories,
+    datasets,
+    stacked,
+    show_grid: true,
+    show_legend: true,
+    show_value_labels: false,
   }
 }
 
+///|
 /// 设置标题
 pub fn BarChart::with_title(self : BarChart, title : String) -> BarChart {
   { ..self, title, margin_top: 60.0 }
 }
 
+///|
 /// 设置边距
 pub fn BarChart::with_margin(
   self : BarChart,
-  top : Double, bottom : Double, left : Double, right : Double
+  top : Double,
+  bottom : Double,
+  left : Double,
+  right : Double,
 ) -> BarChart {
-  { ..self, margin_top: top, margin_bottom: bottom, margin_left: left, margin_right: right }
+  {
+    ..self,
+    margin_top: top,
+    margin_bottom: bottom,
+    margin_left: left,
+    margin_right: right,
+  }
 }
 
+///|
 /// 设置是否显示值标签
 pub fn BarChart::with_value_labels(self : BarChart, show : Bool) -> BarChart {
   { ..self, show_value_labels: show }
 }
 
+///|
 /// 渲染为 SVG 字符串
 pub fn BarChart::render(self : BarChart) -> String {
   let plot_left = self.margin_left
@@ -90,21 +120,38 @@ pub fn BarChart::render(self : BarChart) -> String {
   let cat_width = plot_width / n_cats.to_double()
   let group_width = cat_width * 0.8
   let bar_width = if self.stacked || n_datasets == 1 {
-      group_width
-    } else {
-      group_width / n_datasets.to_double()
-    }
+    group_width
+  } else {
+    group_width / n_datasets.to_double()
+  }
   let group_offset = (cat_width - group_width) / 2.0
 
   let mut elements : Array[@lib.SvgElement] = []
 
   // 背景
-  let bg = @lib.SvgRect::new(0.0, 0.0, self.width, self.height, self.theme.background, "none", 0, 0.0, 0.0)
+  let bg = @lib.SvgRect::new(
+    0.0,
+    0.0,
+    self.width,
+    self.height,
+    self.theme.background,
+    "none",
+    0,
+    0.0,
+    0.0,
+  )
   elements = elements + [@lib.SvgElement::RectElement(bg)]
 
   // 标题
   if self.title != "" {
-    let t = @lib.render_chart_title(self.title, self.width, 24.0, self.theme.title_color, 16, self.theme.font_family)
+    let t = @lib.render_chart_title(
+      self.title,
+      self.width,
+      24.0,
+      self.theme.title_color,
+      16,
+      self.theme.font_family,
+    )
     elements = elements + [t]
   }
 
@@ -114,13 +161,32 @@ pub fn BarChart::render(self : BarChart) -> String {
     .with_grid(self.show_grid, self.theme.grid_color)
     .with_y_color(self.theme.axis_color, self.theme.axis_color)
     .with_x_color(self.theme.axis_color, self.theme.axis_color)
-  let y_axis_elems = @lib.render_y_axis(c2, scale, plot_left, plot_right, plot_top, plot_bottom, self.theme.font_family)
+  let y_axis_elems = @lib.render_y_axis(
+    c2,
+    scale,
+    plot_left,
+    plot_right,
+    plot_top,
+    plot_bottom,
+    self.theme.font_family,
+  )
   elements = elements + y_axis_elems
-  let x_axis_elems = @lib.render_x_axis(c2, self.categories, plot_left, plot_right, plot_bottom, self.theme.font_family)
+  let x_axis_elems = @lib.render_x_axis(
+    c2,
+    self.categories,
+    plot_left,
+    plot_right,
+    plot_bottom,
+    self.theme.font_family,
+  )
   elements = elements + x_axis_elems
 
   // 绘制柱子
-  elements = elements + render_bars(self, scale, cat_width, group_offset, bar_width, plot_left, plot_bottom, plot_top, plot_height)
+  elements = elements +
+    render_bars(
+      self, scale, cat_width, group_offset, bar_width, plot_left, plot_bottom, plot_top,
+      plot_height,
+    )
 
   // 图例（使用共享 Legend 组件）
   if self.show_legend && n_datasets > 1 {
@@ -129,7 +195,16 @@ pub fn BarChart::render(self : BarChart) -> String {
     let lc2 = legend_config
       .with_text_color(self.theme.legend_color)
       .with_font(self.theme.font_family, legend_config.font_size)
-    let legend = @lib.render_legend(lc2, legend_items, self.width, self.height, plot_left, plot_right, plot_top, plot_bottom)
+    let legend = @lib.render_legend(
+      lc2,
+      legend_items,
+      self.width,
+      self.height,
+      plot_left,
+      plot_right,
+      plot_top,
+      plot_bottom,
+    )
     elements = elements + legend
   }
 
@@ -139,19 +214,41 @@ pub fn BarChart::render(self : BarChart) -> String {
   doc2.render()
 }
 
+///|
 /// 渲染空图表
 fn render_empty_chart(w : Double, h : Double, theme : @lib.Theme) -> String {
   let doc = @lib.SvgDocument::new(w.to_int(), h.to_int())
-  let bg = @lib.SvgRect::new(0.0, 0.0, w, h, theme.background, "none", 0, 0.0, 0.0)
-  let msg = @lib.SvgText::new(w / 2.0, h / 2.0, "No data", 14, theme.text_color, "middle", theme.font_family)
+  let bg = @lib.SvgRect::new(
+    0.0,
+    0.0,
+    w,
+    h,
+    theme.background,
+    "none",
+    0,
+    0.0,
+    0.0,
+  )
+  let msg = @lib.SvgText::new(
+    w / 2.0,
+    h / 2.0,
+    "No data",
+    14,
+    theme.text_color,
+    "middle",
+    theme.font_family,
+  )
   let d0 = doc.add_element(@lib.SvgElement::RectElement(bg))
   let d1 = d0.add_element(@lib.SvgElement::TextElement(msg))
   d1.render()
 }
 
+///|
 /// 计算数据集最大值
 fn calc_max_value(datasets : Array[BarSeries], stacked : Bool) -> Double {
-  if datasets.length() == 0 { return 1.0 }
+  if datasets.length() == 0 {
+    return 1.0
+  }
   if stacked {
     // 堆叠模式：同分类下所有数据求和
     let n = datasets[0].values.length()
@@ -166,10 +263,16 @@ fn calc_max_value(datasets : Array[BarSeries], stacked : Bool) -> Double {
         }
         j = j + 1
       }
-      if sum > max_sum { max_sum = sum }
+      if sum > max_sum {
+        max_sum = sum
+      }
       i = i + 1
     }
-    if max_sum <= 0.0 { 1.0 } else { max_sum }
+    if max_sum <= 0.0 {
+      1.0
+    } else {
+      max_sum
+    }
   } else {
     // 分组模式：取所有值的最大值
     let mut max_v = 0.0
@@ -178,20 +281,33 @@ fn calc_max_value(datasets : Array[BarSeries], stacked : Bool) -> Double {
       let mut j = 0
       while j < datasets[i].values.length() {
         let v = datasets[i].values[j]
-        if v > max_v { max_v = v }
+        if v > max_v {
+          max_v = v
+        }
         j = j + 1
       }
       i = i + 1
     }
-    if max_v <= 0.0 { 1.0 } else { max_v }
+    if max_v <= 0.0 {
+      1.0
+    } else {
+      max_v
+    }
   }
 }
 
+///|
 /// 渲染柱子
 fn render_bars(
-  chart : BarChart, scale : @lib.AxisScale,
-  cat_width : Double, group_offset : Double, bar_width : Double,
-  plot_left : Double, plot_bottom : Double, plot_top : Double, _plot_height : Double
+  chart : BarChart,
+  scale : @lib.AxisScale,
+  cat_width : Double,
+  group_offset : Double,
+  bar_width : Double,
+  plot_left : Double,
+  plot_bottom : Double,
+  plot_top : Double,
+  _plot_height : Double,
 ) -> Array[@lib.SvgElement] {
   let mut elements : Array[@lib.SvgElement] = []
   let n_cats = chart.categories.length()
@@ -210,8 +326,23 @@ fn render_bars(
         let val = if ci < ds.values.length() { ds.values[ci] } else { 0.0 }
         if val > 0.0 {
           let y0 = @lib.scale_to_y(stack_bottom, scale, plot_top, plot_bottom)
-          let y1 = @lib.scale_to_y(stack_bottom + val, scale, plot_top, plot_bottom)
-          let rect = @lib.SvgRect::new(cat_x, y1, bar_width, y0 - y1, ds.color, "none", 0, 0.0, 0.0)
+          let y1 = @lib.scale_to_y(
+            stack_bottom + val,
+            scale,
+            plot_top,
+            plot_bottom,
+          )
+          let rect = @lib.SvgRect::new(
+            cat_x,
+            y1,
+            bar_width,
+            y0 - y1,
+            ds.color,
+            "none",
+            0,
+            0.0,
+            0.0,
+          )
           elements = elements + [@lib.SvgElement::RectElement(rect)]
           stack_bottom = stack_bottom + val
         }
@@ -227,14 +358,29 @@ fn render_bars(
         let bar_x = cat_x + di.to_double() * bx
         let bw = if n_datasets == 1 { bar_width } else { bx * 0.9 }
         let gy = @lib.scale_to_y(val, scale, plot_top, plot_bottom)
-        let rect = @lib.SvgRect::new(bar_x, gy, bw, plot_bottom - gy, ds.color, "none", 0, 0.0, 0.0)
+        let rect = @lib.SvgRect::new(
+          bar_x,
+          gy,
+          bw,
+          plot_bottom - gy,
+          ds.color,
+          "none",
+          0,
+          0.0,
+          0.0,
+        )
         elements = elements + [@lib.SvgElement::RectElement(rect)]
 
         // 值标签
         if chart.show_value_labels && val > 0.0 {
           let lbl = @lib.SvgText::new(
-            bar_x + bw / 2.0, gy - 4.0,
-            val.to_int().to_string(), 10, chart.theme.text_color, "middle", chart.theme.font_family
+            bar_x + bw / 2.0,
+            gy - 4.0,
+            val.to_int().to_string(),
+            10,
+            chart.theme.text_color,
+            "middle",
+            chart.theme.font_family,
           )
           elements = elements + [@lib.SvgElement::TextElement(lbl)]
         }
@@ -246,6 +392,7 @@ fn render_bars(
   elements
 }
 
+///|
 /// 构建柱状图图例数据项
 fn build_bar_legend_items(chart : BarChart) -> Array[@lib.LegendItem] {
   let mut items : Array[@lib.LegendItem] = []

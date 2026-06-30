@@ -1,12 +1,14 @@
 /// 主题系统模块
 /// 支持浅色/深色双主题，提供完整的图表配色方案
 
+///|
 /// 主题模式
 pub enum ThemeMode {
   Light
   Dark
 }
 
+///|
 /// 主题配置
 pub struct Theme {
   mode : ThemeMode
@@ -23,6 +25,7 @@ pub struct Theme {
   palette : Array[String]
 }
 
+///|
 /// 使用浅色主题默认配置
 pub fn Theme::new_light() -> Theme {
   Theme::{
@@ -38,13 +41,13 @@ pub fn Theme::new_light() -> Theme {
     font_family: "sans-serif",
     font_size: 14,
     palette: [
-      "#4e79a7", "#f28e2b", "#e15759", "#76b7b2",
-      "#59a14f", "#edc948", "#b07aa1", "#ff9da7",
-      "#9c755f", "#bab0ac"
-    ]
+      "#4e79a7", "#f28e2b", "#e15759", "#76b7b2", "#59a14f", "#edc948", "#b07aa1",
+      "#ff9da7", "#9c755f", "#bab0ac",
+    ],
   }
 }
 
+///|
 /// 使用深色主题默认配置
 pub fn Theme::new_dark() -> Theme {
   Theme::{
@@ -60,25 +63,29 @@ pub fn Theme::new_dark() -> Theme {
     font_family: "sans-serif",
     font_size: 14,
     palette: [
-      "#4e79a7", "#f28e2b", "#e15759", "#76b7b2",
-      "#59a14f", "#edc948", "#b07aa1", "#ff9da7",
-      "#9c755f", "#bab0ac"
-    ]
+      "#4e79a7", "#f28e2b", "#e15759", "#76b7b2", "#59a14f", "#edc948", "#b07aa1",
+      "#ff9da7", "#9c755f", "#bab0ac",
+    ],
   }
 }
 
+///|
 /// 获取指定索引的色板颜色（自动循环）
 pub fn get_palette_color(theme : Theme, index : Int) -> String {
   let len = theme.palette.length()
-  if len == 0 { return "#000000" }
+  if len == 0 {
+    return "#000000"
+  }
   theme.palette[index % len]
 }
 
+///|
 /// 获取浅色主题（向后兼容）
 pub fn get_light_theme() -> Theme {
   Theme::new_light()
 }
 
+///|
 /// 获取深色主题（向后兼容）
 pub fn get_dark_theme() -> Theme {
   Theme::new_dark()

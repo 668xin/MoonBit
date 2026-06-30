@@ -1,3 +1,4 @@
+///|
 /// 折线图 Demo — 使用 LineChart 组件
 pub fn demo_line_chart() -> String {
   let theme = @lib.Theme::new_light()
@@ -10,7 +11,7 @@ pub fn demo_line_chart() -> String {
     @line.DataPoint::new(3.0, 100.0),
     @line.DataPoint::new(4.0, 140.0),
     @line.DataPoint::new(5.0, 80.0),
-    @line.DataPoint::new(6.0, 120.0)
+    @line.DataPoint::new(6.0, 120.0),
   ]
   let ds = @line.LineSeries::new("Series A", pts, colors[0])
   let chart = @line.LineChart::new(500.0, 350.0, [ds], theme)
@@ -18,6 +19,7 @@ pub fn demo_line_chart() -> String {
   c2.render()
 }
 
+///|
 /// 多组折线图 Demo
 pub fn demo_multi_line_chart() -> String {
   let theme = @lib.Theme::new_light()
@@ -30,7 +32,7 @@ pub fn demo_multi_line_chart() -> String {
     @line.DataPoint::new(3.0, 100.0),
     @line.DataPoint::new(4.0, 140.0),
     @line.DataPoint::new(5.0, 80.0),
-    @line.DataPoint::new(6.0, 120.0)
+    @line.DataPoint::new(6.0, 120.0),
   ]
   let pts_b = [
     @line.DataPoint::new(0.0, 100.0),
@@ -39,7 +41,7 @@ pub fn demo_multi_line_chart() -> String {
     @line.DataPoint::new(3.0, 160.0),
     @line.DataPoint::new(4.0, 90.0),
     @line.DataPoint::new(5.0, 180.0),
-    @line.DataPoint::new(6.0, 140.0)
+    @line.DataPoint::new(6.0, 140.0),
   ]
   let pts_c = [
     @line.DataPoint::new(0.0, 50.0),
@@ -48,7 +50,7 @@ pub fn demo_multi_line_chart() -> String {
     @line.DataPoint::new(3.0, 70.0),
     @line.DataPoint::new(4.0, 130.0),
     @line.DataPoint::new(5.0, 60.0),
-    @line.DataPoint::new(6.0, 90.0)
+    @line.DataPoint::new(6.0, 90.0),
   ]
 
   let ds_a = @line.LineSeries::new("Series A", pts_a, colors[0])

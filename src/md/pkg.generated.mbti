@@ -1,0 +1,60 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "xinxin/moonbit-chart/src/md"
+
+// Values
+pub fn parse_markdown_blocks(String) -> Array[MdBlock]
+
+pub fn render_config_to_svg(ChartConfig) -> String
+
+pub fn render_html_page(String, Array[MdBlock]) -> String
+
+pub fn wrap_chart_svg(String, String) -> String
+
+// Errors
+
+// Types and methods
+pub struct ChartConfig {
+  chart_type : ChartType
+  mut title : String
+  mut width : Double
+  mut height : Double
+  mut theme_mode : String
+  mut categories : Array[String]
+  mut datasets : Array[DataSet]
+  mut stacked : Bool
+}
+pub fn ChartConfig::new(ChartType, String, Double, Double) -> Self
+
+pub enum ChartType {
+  BarChart
+  LineChart
+  PieChart
+  RadarChart
+}
+
+pub struct DataSet {
+  label : String
+  color : String
+  values : Array[Double]
+}
+pub fn DataSet::new(String, String, Array[Double]) -> Self
+
+pub enum MdBlock {
+  Heading(Int, String)
+  Paragraph(String)
+  Chart(ChartConfig)
+  HorizontalRule
+  EmptyLine
+}
+
+pub struct MdConverter {
+  page_title : String
+}
+pub fn MdConverter::convert(Self, String) -> String
+pub fn MdConverter::new() -> Self
+pub fn MdConverter::with_title(Self, String) -> Self
+
+// Type aliases
+
+// Traits
+

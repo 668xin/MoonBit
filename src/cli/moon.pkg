@@ -1,0 +1,8 @@
+import {
+  "moonbitlang/core/env",
+  "xinxin/moonbit-chart/src/md",
+}
+
+options(
+  "is-main": true,
+)

@@ -1,0 +1,16 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "xinxin/moonbit-chart/src/chart/tooltip"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct Tooltip {
+}
+pub fn Tooltip::new() -> Self
+
+// Type aliases
+
+// Traits
+

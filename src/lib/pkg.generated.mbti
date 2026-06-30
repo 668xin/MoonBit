@@ -1,0 +1,277 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "xinxin/moonbit-chart/src/lib"
+
+// Values
+pub fn calc_scale(Double, Double, Int) -> AxisScale
+
+pub fn default_axis_config() -> AxisConfig
+
+pub fn default_legend_config() -> LegendConfig
+
+pub fn default_tooltip_config() -> TooltipConfig
+
+pub fn get_dark_theme() -> Theme
+
+pub fn get_light_theme() -> Theme
+
+pub fn get_palette_color(Theme, Int) -> String
+
+pub fn hello() -> String
+
+pub fn legend_occupied_height(LegendConfig) -> Double
+
+pub fn legend_occupied_width(LegendConfig) -> Double
+
+pub fn render_chart_title(String, Double, Double, String, Int, String) -> SvgElement
+
+pub fn render_hgrid(AxisScale, Double, Double, Double, Double, String) -> Array[SvgElement]
+
+pub fn render_legend(LegendConfig, Array[LegendItem], Double, Double, Double, Double, Double, Double) -> Array[SvgElement]
+
+pub fn render_simple_tooltip(Double, Double, String, TooltipConfig) -> SvgElement
+
+pub fn render_svg_element(SvgElement) -> String
+
+pub fn render_tooltip_box(Double, Double, Array[String], TooltipConfig) -> SvgElement
+
+pub fn render_x_axis(AxisConfig, Array[String], Double, Double, Double, String) -> Array[SvgElement]
+
+pub fn render_x_labels(Array[String], Double, Double, Double, String, Int, String) -> Array[SvgElement]
+
+pub fn render_x_title(String, Double, Double, Double, String, Int, String) -> SvgElement
+
+pub fn render_y_axis(AxisConfig, AxisScale, Double, Double, Double, Double, String) -> Array[SvgElement]
+
+pub fn render_y_labels(AxisScale, Double, Double, Double, String, Int, String) -> Array[SvgElement]
+
+pub fn scale_to_y(Double, AxisScale, Double, Double) -> Double
+
+pub fn string_to_utf8(String) -> Bytes
+
+pub fn with_tooltip(SvgElement, String) -> SvgElement
+
+// Errors
+
+// Types and methods
+pub struct AxisConfig {
+  y_show_grid : Bool
+  y_show_labels : Bool
+  y_label_size : Int
+  y_label_color : String
+  y_grid_color : String
+  y_grid_width : Double
+  y_axis_color : String
+  y_axis_width : Double
+  y_tick_length : Double
+  x_show_labels : Bool
+  x_label_size : Int
+  x_label_color : String
+  x_axis_color : String
+  x_axis_width : Double
+  x_tick_length : Double
+}
+pub fn AxisConfig::with_grid(Self, Bool, String) -> Self
+pub fn AxisConfig::with_x_color(Self, String, String) -> Self
+pub fn AxisConfig::with_y_color(Self, String, String) -> Self
+
+pub struct AxisScale {
+  min_val : Double
+  max_val : Double
+  step : Double
+  tick_count : Int
+}
+
+pub struct Color {
+  r : Int
+  g : Int
+  b : Int
+  a : Double
+}
+pub fn Color::black() -> Self
+pub fn Color::blue() -> Self
+pub fn Color::green() -> Self
+pub fn Color::red() -> Self
+pub fn Color::to_css(Self) -> String
+pub fn Color::white() -> Self
+
+pub struct LegendConfig {
+  position : LegendPosition
+  font_size : Int
+  font_family : String
+  text_color : String
+  item_width : Double
+  item_height : Double
+  marker_size : Double
+  padding : Double
+}
+pub fn LegendConfig::with_font(Self, String, Int) -> Self
+pub fn LegendConfig::with_left_position(Self) -> Self
+pub fn LegendConfig::with_right_position(Self) -> Self
+pub fn LegendConfig::with_text_color(Self, String) -> Self
+pub fn LegendConfig::with_top_position(Self) -> Self
+
+pub struct LegendItem {
+  label : String
+  color : String
+}
+pub fn LegendItem::new(String, String) -> Self
+
+pub enum LegendPosition {
+  Top
+  Bottom
+  Left
+  Right
+}
+
+pub struct Point {
+  x : Int
+  y : Int
+}
+pub fn Point::new(Int, Int) -> Self
+
+pub struct Rect {
+  x : Int
+  y : Int
+  width : Int
+  height : Int
+}
+pub fn Rect::new(Int, Int, Int, Int) -> Self
+
+pub struct SvgCircle {
+  cx : Double
+  cy : Double
+  r : Double
+  fill : String
+  stroke : String
+  stroke_width : Int
+}
+pub fn SvgCircle::new(Double, Double, Double, String, String, Int) -> Self
+pub fn SvgCircle::render(Self) -> String
+
+pub struct SvgDocument {
+  width : Int
+  height : Int
+  elements : Array[SvgElement]
+}
+pub fn SvgDocument::add_element(Self, SvgElement) -> Self
+pub fn SvgDocument::add_elements(Self, Array[SvgElement]) -> Self
+pub fn SvgDocument::new(Int, Int) -> Self
+pub fn SvgDocument::render(Self) -> String
+
+pub(all) enum SvgElement {
+  RectElement(SvgRect)
+  CircleElement(SvgCircle)
+  PathElement(SvgPath)
+  TextElement(SvgText)
+  LineElement(SvgLine)
+  PolylineElement(SvgPolyline)
+  PolygonElement(SvgPolygon)
+  GroupElement(SvgGroup)
+}
+
+pub struct SvgGroup {
+  elements : Array[SvgElement]
+  transform : String
+}
+pub fn SvgGroup::new(Array[SvgElement], String) -> Self
+pub fn SvgGroup::render(Self) -> String
+
+pub struct SvgLine {
+  x1 : Double
+  y1 : Double
+  x2 : Double
+  y2 : Double
+  stroke : String
+  stroke_width : Int
+}
+pub fn SvgLine::new(Double, Double, Double, Double, String, Int) -> Self
+pub fn SvgLine::render(Self) -> String
+
+pub struct SvgPath {
+  data : String
+  fill : String
+  stroke : String
+  stroke_width : Int
+}
+pub fn SvgPath::new(String, String, String, Int) -> Self
+pub fn SvgPath::render(Self) -> String
+
+pub struct SvgPolygon {
+  points : Array[(Double, Double)]
+  fill : String
+  stroke : String
+  stroke_width : Int
+}
+pub fn SvgPolygon::new(Array[(Double, Double)], String, String, Int) -> Self
+pub fn SvgPolygon::render(Self) -> String
+
+pub struct SvgPolyline {
+  points : Array[(Double, Double)]
+  fill : String
+  stroke : String
+  stroke_width : Int
+}
+pub fn SvgPolyline::new(Array[(Double, Double)], String, String, Int) -> Self
+pub fn SvgPolyline::render(Self) -> String
+
+pub struct SvgRect {
+  x : Double
+  y : Double
+  width : Double
+  height : Double
+  rx : Double
+  ry : Double
+  fill : String
+  stroke : String
+  stroke_width : Int
+}
+pub fn SvgRect::new(Double, Double, Double, Double, String, String, Int, Double, Double) -> Self
+pub fn SvgRect::render(Self) -> String
+
+pub struct SvgText {
+  x : Double
+  y : Double
+  content : String
+  font_size : Int
+  fill : String
+  text_anchor : String
+  font_family : String
+}
+pub fn SvgText::new(Double, Double, String, Int, String, String, String) -> Self
+pub fn SvgText::render(Self) -> String
+
+pub struct Theme {
+  mode : ThemeMode
+  background : String
+  text_color : String
+  grid_color : String
+  axis_color : String
+  title_color : String
+  legend_color : String
+  tooltip_bg : String
+  tooltip_text : String
+  font_family : String
+  font_size : Int
+  palette : Array[String]
+}
+pub fn Theme::new_dark() -> Self
+pub fn Theme::new_light() -> Self
+
+pub enum ThemeMode {
+  Light
+  Dark
+}
+
+pub struct TooltipConfig {
+  background : String
+  text_color : String
+  font_size : Int
+  font_family : String
+  border_radius : Double
+  padding : Double
+}
+
+// Type aliases
+
+// Traits
+

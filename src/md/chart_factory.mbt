@@ -1,6 +1,7 @@
 /// 图表工厂模块
 /// 根据 ChartConfig 创建对应图表组件并生成 SVG
 
+///|
 /// 将 ChartConfig 渲染为 SVG 字符串
 pub fn render_config_to_svg(config : ChartConfig) -> String {
   let theme = if config.theme_mode == "dark" {
@@ -17,6 +18,7 @@ pub fn render_config_to_svg(config : ChartConfig) -> String {
   }
 }
 
+///|
 /// 渲染柱状图
 fn render_bar_config(config : ChartConfig, theme : @lib.Theme) -> String {
   let datasets = config.datasets
@@ -54,11 +56,23 @@ fn render_bar_config(config : ChartConfig, theme : @lib.Theme) -> String {
     ["A", "B"]
   }
 
-  let chart = @bar.BarChart::new(config.width, config.height, cats, series, theme, config.stacked)
-  let c2 = if config.title != "" { chart.with_title(config.title) } else { chart }
+  let chart = @bar.BarChart::new(
+    config.width,
+    config.height,
+    cats,
+    series,
+    theme,
+    config.stacked,
+  )
+  let c2 = if config.title != "" {
+    chart.with_title(config.title)
+  } else {
+    chart
+  }
   c2.render()
 }
 
+///|
 /// 渲染折线图
 fn render_line_config(config : ChartConfig, theme : @lib.Theme) -> String {
   let datasets = config.datasets
@@ -87,10 +101,15 @@ fn render_line_config(config : ChartConfig, theme : @lib.Theme) -> String {
   }
 
   let chart = @line.LineChart::new(config.width, config.height, series, theme)
-  let c2 = if config.title != "" { chart.with_title(config.title) } else { chart }
+  let c2 = if config.title != "" {
+    chart.with_title(config.title)
+  } else {
+    chart
+  }
   c2.render()
 }
 
+///|
 /// 渲染饼图
 fn render_pie_config(config : ChartConfig, theme : @lib.Theme) -> String {
   let datasets = config.datasets
@@ -104,7 +123,11 @@ fn render_pie_config(config : ChartConfig, theme : @lib.Theme) -> String {
   let mut i = 0
   while i < datasets.length() {
     let ds = datasets[i]
-    let label = if has_cats && i < config.categories.length() { config.categories[i] } else { ds.label }
+    let label = if has_cats && i < config.categories.length() {
+      config.categories[i]
+    } else {
+      ds.label
+    }
     let color = if ds.color == "" || ds.color == "#" {
       @lib.get_palette_color(theme, i)
     } else {
@@ -117,10 +140,15 @@ fn render_pie_config(config : ChartConfig, theme : @lib.Theme) -> String {
   }
 
   let chart = @pie.PieChart::new(config.width, config.height, slices, theme)
-  let c2 = if config.title != "" { chart.with_title(config.title) } else { chart }
+  let c2 = if config.title != "" {
+    chart.with_title(config.title)
+  } else {
+    chart
+  }
   c2.render()
 }
 
+///|
 /// 渲染雷达图
 fn render_radar_config(config : ChartConfig, theme : @lib.Theme) -> String {
   let datasets = config.datasets
@@ -141,16 +169,50 @@ fn render_radar_config(config : ChartConfig, theme : @lib.Theme) -> String {
     i = i + 1
   }
 
-  let chart = @radar.RadarChart::new(config.width, config.height, config.categories, series, theme)
-  let c2 = if config.title != "" { chart.with_title(config.title) } else { chart }
+  let chart = @radar.RadarChart::new(
+    config.width,
+    config.height,
+    config.categories,
+    series,
+    theme,
+  )
+  let c2 = if config.title != "" {
+    chart.with_title(config.title)
+  } else {
+    chart
+  }
   c2.render()
 }
 
+///|
 /// 渲染空数据 SVG
-fn render_empty_svg(w : Double, h : Double, msg : String, theme : @lib.Theme) -> String {
+fn render_empty_svg(
+  w : Double,
+  h : Double,
+  msg : String,
+  theme : @lib.Theme,
+) -> String {
   let doc = @lib.SvgDocument::new(w.to_int(), h.to_int())
-  let bg = @lib.SvgRect::new(0.0, 0.0, w, h, theme.background, "none", 0, 0.0, 0.0)
-  let text = @lib.SvgText::new(w / 2.0, h / 2.0, msg, 14, theme.text_color, "middle", theme.font_family)
+  let bg = @lib.SvgRect::new(
+    0.0,
+    0.0,
+    w,
+    h,
+    theme.background,
+    "none",
+    0,
+    0.0,
+    0.0,
+  )
+  let text = @lib.SvgText::new(
+    w / 2.0,
+    h / 2.0,
+    msg,
+    14,
+    theme.text_color,
+    "middle",
+    theme.font_family,
+  )
   let d1 = doc.add_element(@lib.SvgElement::RectElement(bg))
   let d2 = d1.add_element(@lib.SvgElement::TextElement(text))
   d2.render()

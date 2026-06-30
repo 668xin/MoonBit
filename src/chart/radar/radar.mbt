@@ -1,6 +1,7 @@
 /// 雷达图组件
 /// 支持多边形网格、多组数据填充、图例
 
+///|
 /// 雷达图系列数据
 pub struct RadarSeries {
   label : String
@@ -8,11 +9,17 @@ pub struct RadarSeries {
   color : String
 }
 
+///|
 /// 创建雷达图系列
-pub fn RadarSeries::new(label : String, values : Array[Double], color : String) -> RadarSeries {
+pub fn RadarSeries::new(
+  label : String,
+  values : Array[Double],
+  color : String,
+) -> RadarSeries {
   { label, values, color }
 }
 
+///|
 /// 雷达图配置
 pub struct RadarChart {
   width : Double
@@ -30,38 +37,58 @@ pub struct RadarChart {
   fill_opacity : Double
 }
 
+///|
 /// 创建雷达图实例
 pub fn RadarChart::new(
-  width : Double, height : Double,
+  width : Double,
+  height : Double,
   categories : Array[String],
   datasets : Array[RadarSeries],
-  theme : @lib.Theme
+  theme : @lib.Theme,
 ) -> RadarChart {
   RadarChart::{
-    width, height,
-    cx: width / 2.0, cy: height / 2.0 - 20.0,
-    radius: if width < height { width / 2.0 - 80.0 } else { height / 2.0 - 80.0 },
-    title: "", theme, categories, datasets,
-    levels: 5, show_grid: true, show_legend: true,
-    fill_opacity: 0.2
+    width,
+    height,
+    cx: width / 2.0,
+    cy: height / 2.0 - 20.0,
+    radius: if width < height {
+      width / 2.0 - 80.0
+    } else {
+      height / 2.0 - 80.0
+    },
+    title: "",
+    theme,
+    categories,
+    datasets,
+    levels: 5,
+    show_grid: true,
+    show_legend: true,
+    fill_opacity: 0.2,
   }
 }
 
+///|
 /// 设置标题
 pub fn RadarChart::with_title(self : RadarChart, title : String) -> RadarChart {
   { ..self, title, cy: self.height / 2.0 - 30.0 }
 }
 
+///|
 /// 设置网格层级数
 pub fn RadarChart::with_levels(self : RadarChart, levels : Int) -> RadarChart {
-  { ..self, levels }
+  { ..self, levels, }
 }
 
+///|
 /// 设置填充透明度
-pub fn RadarChart::with_opacity(self : RadarChart, opacity : Double) -> RadarChart {
+pub fn RadarChart::with_opacity(
+  self : RadarChart,
+  opacity : Double,
+) -> RadarChart {
   { ..self, fill_opacity: opacity }
 }
 
+///|
 /// 渲染为 SVG 字符串
 pub fn RadarChart::render(self : RadarChart) -> String {
   let n_axes = self.categories.length()
@@ -74,12 +101,29 @@ pub fn RadarChart::render(self : RadarChart) -> String {
   let mut elements : Array[@lib.SvgElement] = []
 
   // 背景
-  let bg = @lib.SvgRect::new(0.0, 0.0, self.width, self.height, self.theme.background, "none", 0, 0.0, 0.0)
+  let bg = @lib.SvgRect::new(
+    0.0,
+    0.0,
+    self.width,
+    self.height,
+    self.theme.background,
+    "none",
+    0,
+    0.0,
+    0.0,
+  )
   elements = elements + [@lib.SvgElement::RectElement(bg)]
 
   // 标题
   if self.title != "" {
-    let t = @lib.render_chart_title(self.title, self.width, 20.0, self.theme.title_color, 16, self.theme.font_family)
+    let t = @lib.render_chart_title(
+      self.title,
+      self.width,
+      20.0,
+      self.theme.title_color,
+      16,
+      self.theme.font_family,
+    )
     elements = elements + [t]
   }
 
@@ -87,16 +131,34 @@ pub fn RadarChart::render(self : RadarChart) -> String {
 
   // 网格线
   if self.show_grid {
-    let grid = render_radar_grid(self, angle_step, self.cx, self.cy, self.radius)
+    let grid = render_radar_grid(
+      self,
+      angle_step,
+      self.cx,
+      self.cy,
+      self.radius,
+    )
     elements = elements + grid
   }
 
   // 轴线和标签
-  let axis_elems = render_radar_axes(self, angle_step, self.cx, self.cy, self.radius)
+  let axis_elems = render_radar_axes(
+    self,
+    angle_step,
+    self.cx,
+    self.cy,
+    self.radius,
+  )
   elements = elements + axis_elems
 
   // 数据集
-  let data_elems = render_radar_data(self, angle_step, self.cx, self.cy, self.radius)
+  let data_elems = render_radar_data(
+    self,
+    angle_step,
+    self.cx,
+    self.cy,
+    self.radius,
+  )
   elements = elements + data_elems
 
   // 图例
@@ -111,15 +173,25 @@ pub fn RadarChart::render(self : RadarChart) -> String {
   doc2.render()
 }
 
+///|
 /// 获取轴顶点坐标
-fn get_axis_point(cx : Double, cy : Double, r : Double, angle : Double) -> (Double, Double) {
+fn get_axis_point(
+  cx : Double,
+  cy : Double,
+  r : Double,
+  angle : Double,
+) -> (Double, Double) {
   (cx + r * @math.cos(angle), cy + r * @math.sin(angle))
 }
 
+///|
 /// 渲染雷达图网格
 fn render_radar_grid(
-  chart : RadarChart, angle_step : Double,
-  cx : Double, cy : Double, r : Double
+  chart : RadarChart,
+  angle_step : Double,
+  cx : Double,
+  cy : Double,
+  r : Double,
 ) -> Array[@lib.SvgElement] {
   let mut elements : Array[@lib.SvgElement] = []
   let n_axes = chart.categories.length()
@@ -154,10 +226,14 @@ fn render_radar_grid(
   elements
 }
 
+///|
 /// 渲染雷达图轴标签
 fn render_radar_axes(
-  chart : RadarChart, angle_step : Double,
-  cx : Double, cy : Double, r : Double
+  chart : RadarChart,
+  angle_step : Double,
+  cx : Double,
+  cy : Double,
+  r : Double,
 ) -> Array[@lib.SvgElement] {
   let mut elements : Array[@lib.SvgElement] = []
   let n_axes = chart.categories.length()
@@ -167,12 +243,21 @@ fn render_radar_axes(
   while i < n_axes {
     let angle = i.to_double() * angle_step - @math.PI / 2.0
     let (lx, ly) = get_axis_point(cx, cy, label_r, angle)
-    let anchor = if angle < -@math.PI / 4.0 && angle > -3.0 * @math.PI / 4.0 { "middle" }
-      else if angle < @math.PI / 4.0 && angle > -@math.PI / 4.0 { "start" }
-      else { "end" }
+    let anchor = if angle < -@math.PI / 4.0 && angle > -3.0 * @math.PI / 4.0 {
+      "middle"
+    } else if angle < @math.PI / 4.0 && angle > -@math.PI / 4.0 {
+      "start"
+    } else {
+      "end"
+    }
     let text = @lib.SvgText::new(
-      lx, ly + 4.0,
-      chart.categories[i], 11, chart.theme.axis_color, anchor, chart.theme.font_family
+      lx,
+      ly + 4.0,
+      chart.categories[i],
+      11,
+      chart.theme.axis_color,
+      anchor,
+      chart.theme.font_family,
     )
     elements = elements + [@lib.SvgElement::TextElement(text)]
     i = i + 1
@@ -180,6 +265,7 @@ fn render_radar_axes(
   elements
 }
 
+///|
 /// 计算数据点的最大范围（用于归一化）
 fn calc_radar_max(chart : RadarChart) -> Double {
   let mut max_v = 0.0
@@ -188,18 +274,28 @@ fn calc_radar_max(chart : RadarChart) -> Double {
     let mut vi = 0
     while vi < chart.datasets[di].values.length() {
       let v = chart.datasets[di].values[vi]
-      if v > max_v { max_v = v }
+      if v > max_v {
+        max_v = v
+      }
       vi = vi + 1
     }
     di = di + 1
   }
-  if max_v <= 0.0 { 1.0 } else { max_v }
+  if max_v <= 0.0 {
+    1.0
+  } else {
+    max_v
+  }
 }
 
+///|
 /// 渲染雷达图数据
 fn render_radar_data(
-  chart : RadarChart, angle_step : Double,
-  cx : Double, cy : Double, r : Double
+  chart : RadarChart,
+  angle_step : Double,
+  cx : Double,
+  cy : Double,
+  r : Double,
 ) -> Array[@lib.SvgElement] {
   let mut elements : Array[@lib.SvgElement] = []
   let n_axes = chart.categories.length()
@@ -239,6 +335,7 @@ fn render_radar_data(
   elements
 }
 
+///|
 /// 渲染雷达图图例
 fn render_radar_legend(chart : RadarChart) -> Array[@lib.SvgElement] {
   let mut elems : Array[@lib.SvgElement] = []
@@ -251,10 +348,25 @@ fn render_radar_legend(chart : RadarChart) -> Array[@lib.SvgElement] {
   while i < n {
     let ds = chart.datasets[i]
     let lx = start_x + i.to_double() * 120.0
-    let rect = @lib.SvgRect::new(lx, legend_y - 10.0, 12.0, 12.0, ds.color, "none", 0, 0.0, 0.0)
+    let rect = @lib.SvgRect::new(
+      lx,
+      legend_y - 10.0,
+      12.0,
+      12.0,
+      ds.color,
+      "none",
+      0,
+      0.0,
+      0.0,
+    )
     let text = @lib.SvgText::new(
-      lx + 16.0, legend_y,
-      ds.label, 11, chart.theme.legend_color, "start", chart.theme.font_family
+      lx + 16.0,
+      legend_y,
+      ds.label,
+      11,
+      chart.theme.legend_color,
+      "start",
+      chart.theme.font_family,
     )
     elems = elems + [@lib.SvgElement::RectElement(rect)]
     elems = elems + [@lib.SvgElement::TextElement(text)]
@@ -263,11 +375,34 @@ fn render_radar_legend(chart : RadarChart) -> Array[@lib.SvgElement] {
   elems
 }
 
+///|
 /// 渲染空雷达图
-fn render_empty_radar_chart(w : Double, h : Double, theme : @lib.Theme) -> String {
+fn render_empty_radar_chart(
+  w : Double,
+  h : Double,
+  theme : @lib.Theme,
+) -> String {
   let doc = @lib.SvgDocument::new(w.to_int(), h.to_int())
-  let bg = @lib.SvgRect::new(0.0, 0.0, w, h, theme.background, "none", 0, 0.0, 0.0)
-  let msg = @lib.SvgText::new(w / 2.0, h / 2.0, "No data", 14, theme.text_color, "middle", theme.font_family)
+  let bg = @lib.SvgRect::new(
+    0.0,
+    0.0,
+    w,
+    h,
+    theme.background,
+    "none",
+    0,
+    0.0,
+    0.0,
+  )
+  let msg = @lib.SvgText::new(
+    w / 2.0,
+    h / 2.0,
+    "No data",
+    14,
+    theme.text_color,
+    "middle",
+    theme.font_family,
+  )
   let d0 = doc.add_element(@lib.SvgElement::RectElement(bg))
   let d1 = d0.add_element(@lib.SvgElement::TextElement(msg))
   d1.render()

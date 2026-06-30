@@ -1,0 +1,16 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "xinxin/moonbit-chart/src/chart/legend"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct Legend {
+}
+pub fn Legend::new() -> Self
+
+// Type aliases
+
+// Traits
+

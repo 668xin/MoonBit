@@ -1,0 +1,42 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "xinxin/moonbit-chart/src/chart/pie"
+
+import {
+  "xinxin/moonbit-chart/src/lib",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct PieChart {
+  width : Double
+  height : Double
+  cx : Double
+  cy : Double
+  radius : Double
+  title : String
+  theme : @lib.Theme
+  data : Array[PieSlice]
+  show_labels : Bool
+  show_percent : Bool
+  show_legend : Bool
+}
+pub fn PieChart::new(Double, Double, Array[PieSlice], @lib.Theme) -> Self
+pub fn PieChart::render(Self) -> String
+pub fn PieChart::with_labels(Self, Bool) -> Self
+pub fn PieChart::with_radius(Self, Double) -> Self
+pub fn PieChart::with_title(Self, String) -> Self
+
+pub struct PieSlice {
+  label : String
+  value : Double
+  color : String
+}
+pub fn PieSlice::new(String, Double, String) -> Self
+
+// Type aliases
+
+// Traits
+

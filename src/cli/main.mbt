@@ -1,3 +1,4 @@
+///|
 /// 命令行工具入口
 /// 接收 Markdown 图表配置内容作为命令行参数，输出完整 HTML 到 stdout。
 /// 文件 I/O 由 PowerShell 包装脚本处理。
@@ -7,13 +8,16 @@
 ///
 /// Or via PowerShell wrapper:
 ///   scripts/moonbit-chart.ps1 input.md [output.html]
-
 fn main {
   let args = @env.args()
   if args.length() < 2 {
     println("Usage: moonbit-chart \"<markdown_content>\" [output_name]")
-    println("  Converts Markdown chart config blocks to an HTML visualization page.")
-    println("  Output is written to stdout. File I/O is handled by the wrapper script.")
+    println(
+      "  Converts Markdown chart config blocks to an HTML visualization page.",
+    )
+    println(
+      "  Output is written to stdout. File I/O is handled by the wrapper script.",
+    )
     println("")
     println("Chart config format:")
     println("  @chart: bar|line|pie|radar")

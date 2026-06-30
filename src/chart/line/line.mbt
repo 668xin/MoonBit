@@ -1,17 +1,20 @@
 /// 折线图组件
 /// 支持单组、多组折线图，数据点标记
 
+///|
 /// 折线图数据点
 pub struct DataPoint {
   x : Double
   y : Double
 }
 
+///|
 /// 创建数据点
 pub fn DataPoint::new(x : Double, y : Double) -> DataPoint {
   { x, y }
 }
 
+///|
 /// 折线图系列数据
 pub struct LineSeries {
   label : String
@@ -19,11 +22,17 @@ pub struct LineSeries {
   color : String
 }
 
+///|
 /// 创建折线图系列
-pub fn LineSeries::new(label : String, points : Array[DataPoint], color : String) -> LineSeries {
+pub fn LineSeries::new(
+  label : String,
+  points : Array[DataPoint],
+  color : String,
+) -> LineSeries {
   { label, points, color }
 }
 
+///|
 /// 折线图配置
 pub struct LineChart {
   width : Double
@@ -41,40 +50,62 @@ pub struct LineChart {
   point_radius : Double
 }
 
+///|
 /// 创建折线图实例
 pub fn LineChart::new(
-  width : Double, height : Double,
+  width : Double,
+  height : Double,
   datasets : Array[LineSeries],
-  theme : @lib.Theme
+  theme : @lib.Theme,
 ) -> LineChart {
   LineChart::{
-    width, height,
-    margin_top: 40.0, margin_bottom: 50.0,
-    margin_left: 50.0, margin_right: 30.0,
-    title: "", theme, datasets,
-    show_points: true, show_grid: true,
-    show_legend: true, point_radius: 4.0
+    width,
+    height,
+    margin_top: 40.0,
+    margin_bottom: 50.0,
+    margin_left: 50.0,
+    margin_right: 30.0,
+    title: "",
+    theme,
+    datasets,
+    show_points: true,
+    show_grid: true,
+    show_legend: true,
+    point_radius: 4.0,
   }
 }
 
+///|
 /// 设置标题
 pub fn LineChart::with_title(self : LineChart, title : String) -> LineChart {
   { ..self, title, margin_top: 60.0 }
 }
 
+///|
 /// 设置边距
 pub fn LineChart::with_margin(
   self : LineChart,
-  top : Double, bottom : Double, left : Double, right : Double
+  top : Double,
+  bottom : Double,
+  left : Double,
+  right : Double,
 ) -> LineChart {
-  { ..self, margin_top: top, margin_bottom: bottom, margin_left: left, margin_right: right }
+  {
+    ..self,
+    margin_top: top,
+    margin_bottom: bottom,
+    margin_left: left,
+    margin_right: right,
+  }
 }
 
+///|
 /// 设置是否显示数据点
 pub fn LineChart::with_points(self : LineChart, show : Bool) -> LineChart {
   { ..self, show_points: show }
 }
 
+///|
 /// 渲染为 SVG 字符串
 pub fn LineChart::render(self : LineChart) -> String {
   let plot_left = self.margin_left
@@ -101,12 +132,29 @@ pub fn LineChart::render(self : LineChart) -> String {
   let mut elements : Array[@lib.SvgElement] = []
 
   // 背景
-  let bg = @lib.SvgRect::new(0.0, 0.0, self.width, self.height, self.theme.background, "none", 0, 0.0, 0.0)
+  let bg = @lib.SvgRect::new(
+    0.0,
+    0.0,
+    self.width,
+    self.height,
+    self.theme.background,
+    "none",
+    0,
+    0.0,
+    0.0,
+  )
   elements = elements + [@lib.SvgElement::RectElement(bg)]
 
   // 标题
   if self.title != "" {
-    let t = @lib.render_chart_title(self.title, self.width, 24.0, self.theme.title_color, 16, self.theme.font_family)
+    let t = @lib.render_chart_title(
+      self.title,
+      self.width,
+      24.0,
+      self.theme.title_color,
+      16,
+      self.theme.font_family,
+    )
     elements = elements + [t]
   }
 
@@ -116,20 +164,46 @@ pub fn LineChart::render(self : LineChart) -> String {
     .with_grid(self.show_grid, self.theme.grid_color)
     .with_y_color(self.theme.axis_color, self.theme.axis_color)
     .with_x_color(self.theme.axis_color, self.theme.axis_color)
-  let y_axis_elems = @lib.render_y_axis(c2, y_scale, plot_left, plot_right, plot_top, plot_bottom, self.theme.font_family)
+  let y_axis_elems = @lib.render_y_axis(
+    c2,
+    y_scale,
+    plot_left,
+    plot_right,
+    plot_top,
+    plot_bottom,
+    self.theme.font_family,
+  )
   elements = elements + y_axis_elems
 
   // X轴标签（基于索引）
   let max_n = max_pts
-  let x_labels = render_line_x_labels(max_n, plot_left, plot_right, plot_bottom, self.theme.axis_color, 12, self.theme.font_family)
+  let x_labels = render_line_x_labels(
+    max_n,
+    plot_left,
+    plot_right,
+    plot_bottom,
+    self.theme.axis_color,
+    12,
+    self.theme.font_family,
+  )
   elements = elements + x_labels
 
   // X轴轴线
-  let x_axis_line = @lib.SvgLine::new(plot_left, plot_bottom, plot_right, plot_bottom, self.theme.axis_color, 1)
+  let x_axis_line = @lib.SvgLine::new(
+    plot_left,
+    plot_bottom,
+    plot_right,
+    plot_bottom,
+    self.theme.axis_color,
+    1,
+  )
   elements = elements + [@lib.SvgElement::LineElement(x_axis_line)]
 
   // 绘制折线
-  elements = elements + render_lines(self, y_scale, plot_left, plot_right, plot_top, plot_bottom, plot_width, plot_height)
+  elements = elements +
+    render_lines(
+      self, y_scale, plot_left, plot_right, plot_top, plot_bottom, plot_width, plot_height,
+    )
 
   // 图例（使用共享 Legend 组件）
   if self.show_legend && n_datasets > 1 {
@@ -138,7 +212,16 @@ pub fn LineChart::render(self : LineChart) -> String {
     let lc2 = legend_config
       .with_text_color(self.theme.legend_color)
       .with_font(self.theme.font_family, legend_config.font_size)
-    let legend = @lib.render_legend(lc2, legend_items, self.width, self.height, plot_left, plot_right, plot_top, plot_bottom)
+    let legend = @lib.render_legend(
+      lc2,
+      legend_items,
+      self.width,
+      self.height,
+      plot_left,
+      plot_right,
+      plot_top,
+      plot_bottom,
+    )
     elements = elements + legend
   }
 
@@ -148,6 +231,7 @@ pub fn LineChart::render(self : LineChart) -> String {
   doc2.render()
 }
 
+///|
 /// 收集所有数据点
 fn collect_all_points(datasets : Array[LineSeries]) -> Array[DataPoint] {
   let mut all : Array[DataPoint] = []
@@ -159,40 +243,63 @@ fn collect_all_points(datasets : Array[LineSeries]) -> Array[DataPoint] {
   all
 }
 
+///|
 /// 找到最多点的数据集点数
 fn find_max_points(datasets : Array[LineSeries]) -> Int {
   let mut max_n = 0
   let mut i = 0
   while i < datasets.length() {
     let n = datasets[i].points.length()
-    if n > max_n { max_n = n }
+    if n > max_n {
+      max_n = n
+    }
     i = i + 1
   }
-  if max_n <= 0 { 1 } else { max_n }
+  if max_n <= 0 {
+    1
+  } else {
+    max_n
+  }
 }
 
+///|
 /// 查找 Y 值范围 (min, max)
 fn find_y_range(points : Array[DataPoint]) -> (Double, Double) {
-  if points.length() == 0 { return (0.0, 10.0) }
+  if points.length() == 0 {
+    return (0.0, 10.0)
+  }
   let mut min_y = points[0].y
   let mut max_y = points[0].y
   let mut i = 0
   while i < points.length() {
     let y = points[i].y
-    if y < min_y { min_y = y }
-    if y > max_y { max_y = y }
+    if y < min_y {
+      min_y = y
+    }
+    if y > max_y {
+      max_y = y
+    }
     i = i + 1
   }
-  if max_y <= 0.0 { max_y = 10.0 }
-  if min_y > 0.0 { min_y = 0.0 }
+  if max_y <= 0.0 {
+    max_y = 10.0
+  }
+  if min_y > 0.0 {
+    min_y = 0.0
+  }
   (min_y, max_y)
 }
 
+///|
 /// 渲染 X 轴索引标签
 fn render_line_x_labels(
   n : Int,
-  plot_left : Double, plot_right : Double, plot_bottom : Double,
-  label_color : String, font_size : Int, font_family : String
+  plot_left : Double,
+  plot_right : Double,
+  plot_bottom : Double,
+  label_color : String,
+  font_size : Int,
+  font_family : String,
 ) -> Array[@lib.SvgElement] {
   let mut labels : Array[@lib.SvgElement] = []
   let cat_width = (plot_right - plot_left) / n.to_double()
@@ -200,8 +307,13 @@ fn render_line_x_labels(
   while i < n {
     let cx = plot_left + cat_width * (i.to_double() + 0.5)
     let text = @lib.SvgText::new(
-      cx, plot_bottom + font_size.to_double() + 6.0,
-      (i + 1).to_string(), font_size, label_color, "middle", font_family
+      cx,
+      plot_bottom + font_size.to_double() + 6.0,
+      (i + 1).to_string(),
+      font_size,
+      label_color,
+      "middle",
+      font_family,
     )
     labels = labels + [@lib.SvgElement::TextElement(text)]
     i = i + 1
@@ -209,12 +321,17 @@ fn render_line_x_labels(
   labels
 }
 
+///|
 /// 渲染折线
 fn render_lines(
-  chart : LineChart, y_scale : @lib.AxisScale,
-  plot_left : Double, _plot_right : Double,
-  plot_top : Double, plot_bottom : Double,
-  plot_width : Double, _plot_height : Double
+  chart : LineChart,
+  y_scale : @lib.AxisScale,
+  plot_left : Double,
+  _plot_right : Double,
+  plot_top : Double,
+  plot_bottom : Double,
+  plot_width : Double,
+  _plot_height : Double,
 ) -> Array[@lib.SvgElement] {
   let mut elements : Array[@lib.SvgElement] = []
   let n_datasets = chart.datasets.length()
@@ -224,11 +341,18 @@ fn render_lines(
     let ds = chart.datasets[di]
     let pts = ds.points
     let n_pts = pts.length()
-    if n_pts < 2 { di = di + 1; continue }
+    if n_pts < 2 {
+      di = di + 1
+      continue
+    }
 
     // 计算点坐标并构建折线点串
     let max_n = find_max_points(chart.datasets)
-    let x_step = if max_n > 1 { plot_width / (max_n - 1).to_double() } else { plot_width }
+    let x_step = if max_n > 1 {
+      plot_width / (max_n - 1).to_double()
+    } else {
+      plot_width
+    }
 
     let mut mapped_pts : Array[(Double, Double)] = []
     let mut pi = 0
@@ -250,7 +374,14 @@ fn render_lines(
       let mut pi = 0
       while pi < mapped_pts.length() {
         let (cx, cy) = mapped_pts[pi]
-        let circle = @lib.SvgCircle::new(cx, cy, chart.point_radius, ds.color, "white", 2)
+        let circle = @lib.SvgCircle::new(
+          cx,
+          cy,
+          chart.point_radius,
+          ds.color,
+          "white",
+          2,
+        )
         elements = elements + [@lib.SvgElement::CircleElement(circle)]
         pi = pi + 1
       }
@@ -261,6 +392,7 @@ fn render_lines(
   elements
 }
 
+///|
 /// 构建折线图图例数据项
 fn build_line_legend_items(chart : LineChart) -> Array[@lib.LegendItem] {
   let mut items : Array[@lib.LegendItem] = []
@@ -273,11 +405,34 @@ fn build_line_legend_items(chart : LineChart) -> Array[@lib.LegendItem] {
   items
 }
 
+///|
 /// 渲染空折线图
-fn render_empty_line_chart(w : Double, h : Double, theme : @lib.Theme) -> String {
+fn render_empty_line_chart(
+  w : Double,
+  h : Double,
+  theme : @lib.Theme,
+) -> String {
   let doc = @lib.SvgDocument::new(w.to_int(), h.to_int())
-  let bg = @lib.SvgRect::new(0.0, 0.0, w, h, theme.background, "none", 0, 0.0, 0.0)
-  let msg = @lib.SvgText::new(w / 2.0, h / 2.0, "No data", 14, theme.text_color, "middle", theme.font_family)
+  let bg = @lib.SvgRect::new(
+    0.0,
+    0.0,
+    w,
+    h,
+    theme.background,
+    "none",
+    0,
+    0.0,
+    0.0,
+  )
+  let msg = @lib.SvgText::new(
+    w / 2.0,
+    h / 2.0,
+    "No data",
+    14,
+    theme.text_color,
+    "middle",
+    theme.font_family,
+  )
   let d0 = doc.add_element(@lib.SvgElement::RectElement(bg))
   let d1 = d0.add_element(@lib.SvgElement::TextElement(msg))
   d1.render()

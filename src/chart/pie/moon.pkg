@@ -1,4 +1,4 @@
 import {
-  "xinxin/moonbit-chart/src/lib" @lib,
-  "moonbitlang/core/math" @math,
+  "xinxin/moonbit-chart/src/lib",
+  "moonbitlang/core/math",
 }

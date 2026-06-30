@@ -3,6 +3,7 @@
 /// 因此文件 I/O 由 PowerShell 包装脚本处理。
 /// 本模块仅提供字符编码转换工具函数（纯 MoonBit 实现）。
 
+///|
 /// 将 MoonBit String 转为 UTF-8 编码的 Bytes
 pub fn string_to_utf8(str : String) -> Bytes {
   let res : Array[Byte] = []
